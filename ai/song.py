@@ -70,3 +70,22 @@ def generate_lyrics(emotion):
         print(response)
 
     return {"lyrics": lyrics_ids}
+
+def get_lyric(lyrics_id):
+    load_dotenv()
+    TOKEN = os.getenv("TOKEN")
+
+    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
+
+    payload = {}
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+
+    response = json.loads(requests.request("GET", url, headers=headers, data=payload).text)
+
+    import random
+    value = random.randint(0, 1)
+
+    return response["data"]["response"]["data"][value]["text"]

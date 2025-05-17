@@ -4,8 +4,11 @@ app =FastAPI()
 
 @app.get("/song/{song_id}")
 def get_song_by_id(song_id: str) -> dict:
-    print("main", song_id)
     return service.get_song_by_id(song_id)
+
+@app.get("/lyrics/{song_id}")
+def get_lyrics_by_id(song_id: str) -> dict:
+    return service.get_lyrics_by_id(song_id)
 
 @app.get("/survey")
 def analyze_emotion(emotion) -> list:

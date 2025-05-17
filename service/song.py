@@ -19,3 +19,7 @@ def analyze_emotion(emotion):
     lyrics = ai.generate_lyrics(emotion)
     print("success 2")
     return [melodies, lyrics]
+
+
+def get_lyrics_by_id(song_id):
+    return {"lyrics" : ai.get_lyric(song_id)}
