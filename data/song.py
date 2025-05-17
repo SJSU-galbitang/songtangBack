@@ -1,4 +1,4 @@
-from Project.songtangBack.data import db_connect
+from . import db_connect
 from sqlalchemy import create_engine, text
 
 def get_song_by_id(song_id: str):

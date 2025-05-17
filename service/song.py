@@ -1,4 +1,4 @@
-from Project.songtangBack.data import song as data
+from data import song as data
 
 def get_song_by_id(song_id: str) -> dict:
     print("song", song_id, "service")
