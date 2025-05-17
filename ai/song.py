@@ -88,4 +88,9 @@ def get_lyric(lyrics_id):
     import random
     value = random.randint(0, 1)
 
-    return response["data"]["response"]["data"][value]["text"]
+    try:
+        result = response["data"]["response"]["data"][value]["text"]
+        return result
+    except Exception as e:
+        print("가사가 아직 완성되지 않았습니다")
+        return None
