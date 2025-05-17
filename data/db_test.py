@@ -15,6 +15,3 @@ async def test_connection():
         print("✅ DB 연결 성공")
     except Exception as e:
         print("❌ DB 연결 실패:", e)
-
-if __name__ == "__main__":
-    asyncio.run(test_connection())

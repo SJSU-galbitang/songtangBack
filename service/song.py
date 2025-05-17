@@ -1,10 +1,8 @@
 from Project.songtangBack.data import song as data
+from Project.songtangBack.ai import song as ai
 
 def get_song_by_id(song_id: str) -> dict:
-    print("song", song_id, "service")
-
     id, title, length = data.get_song_by_id(song_id)
-
     length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
 
     return {
@@ -12,3 +10,12 @@ def get_song_by_id(song_id: str) -> dict:
         "title" : title,
         "length" : length
     }
+
+
+def analyze_emotion(emotion):
+    ai_emotion = ai.analyze_emotion(emotion)
+    melodies = data.get_song_by_emotion(ai_emotion)
+    print("success 1")
+    lyrics = ai.generate_lyrics(emotion)
+    print("success 2")
+    return [melodies, lyrics]
