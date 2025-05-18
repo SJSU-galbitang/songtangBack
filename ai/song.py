@@ -24,7 +24,9 @@ def analyze_emotion(emotion):
         "어디에 속하는지 2개의 키워드로 알려줘. 다른말 하지말고 두개의 키워드만 콤마로 구분해서 알려줘"
     )
     response = model.generate_content(prompt)
-    return response.text.replace("\n", "").split(", ")
+    emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
+    ai_emotion = response.text.replace("\n", "").split(", ")
+    return emotions & set(ai_emotion)
 
 # 감정 기반 가사 프롬프트 생성
 def generate_lyrics_prompt(emotion):
