@@ -1,8 +1,21 @@
 from typing import List
 
 from fastapi import FastAPI, Body
+from fastapi.middleware.cors import CORSMiddleware
 from Project.songtangBack.service import song as service
 app =FastAPI()
+
+origins = [
+    "https://port-0-songtang-m2vzc8ul0ad93b09.sel4.cloudtype.app/"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/song/{song_id}")
 def get_song_by_id(song_id: str) -> dict:
