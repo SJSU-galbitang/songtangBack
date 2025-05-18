@@ -8,9 +8,9 @@ def get_song_by_id(song_id: str):
     try:
         with engine.connect() as conn:
             result = conn.execute(
-                text("SELECT id, title, length FROM sample_songs WHERE id = :id"),
+                text("SELECT id, title, length FROM songs WHERE id = :id"),
                 {"id": song_id}
-            ).fetchone()
+            ).fetchone() or {"message" : "해당 아이디의 노래는 존재하지 않습니다."}
 
             print("✅ 쿼리 실행 성공")
             return result
@@ -51,3 +51,31 @@ def get_song_by_emotion(emotion = List[str]):
     return {
         "melodies" : selected_data
     }
+
+def insert_song(id, title, length, emotion):
+    engine = create_engine(db_connect.DATABASE_URL, echo=True)
+    try:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(
+                text("INSERT INTO sample_songs (id, title, length, emotion) VALUES (:id, :title, :length, :emotion)"),
+                {"id": id, "title": title, "length": length, "emotion" : emotion}
+            )
+            trans.commit()
+            print("✅ 쿼리 실행 성공")
+    except Exception as e:
+        print("❌ 쿼리 실행 실패:", e)
+
+
+def get_song_prompt_by_id(melody_id):
+    engine = create_engine(db_connect.DATABASE_URL, echo=True)
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(
+                text("SELECT prompt, style FROM where id = :id"),{"id" : melody_id}
+            ).fetchone()
+            print("✅ 쿼리 실행 성공")
+            return result
+    except Exception as e:
+        print("❌ 쿼리 실행 실패:", e)
+        return None

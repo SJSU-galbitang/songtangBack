@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from typing import List
+
+from fastapi import FastAPI, Body
 from Project.songtangBack.service import song as service
 app =FastAPI()
 
@@ -13,6 +15,10 @@ def get_lyrics_by_id(song_id: str) -> dict:
 @app.get("/survey")
 def analyze_emotion(emotion) -> list:
     return service.analyze_emotion(emotion)
+
+@app.post("/song")
+def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[str] = Body(embed = True)):
+    return service.generate_song(melody_ids, lyrics_ids)
 
 if __name__ == '__main__':
     import uvicorn

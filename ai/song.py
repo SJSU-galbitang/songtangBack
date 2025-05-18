@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from dotenv import load_dotenv
 from google import genai
@@ -7,6 +8,9 @@ import requests
 import json
 
 client = genai.Client(api_key="AIzaSyAFnfVMydG1Sx7Y0AQl6dzRsz7OtkgoxPo")
+
+load_dotenv()
+TOKEN = os.getenv("TOKEN")
 
 def analyze_emotion(emotion):
     response = client.models.generate_content(
@@ -41,9 +45,6 @@ def generate_lyrics(emotion):
 
     lyrics_ids = []
 
-    load_dotenv()
-    TOKEN = os.getenv("TOKEN")
-
     # 프롬프트로 가사 만들기 - taskid
     url = "https://apibox.erweima.ai/api/v1/lyrics"
 
@@ -72,8 +73,6 @@ def generate_lyrics(emotion):
     return {"lyrics": lyrics_ids}
 
 def get_lyric(lyrics_id):
-    load_dotenv()
-    TOKEN = os.getenv("TOKEN")
 
     url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
 
@@ -92,5 +91,23 @@ def get_lyric(lyrics_id):
         result = response["data"]["response"]["data"][value]["text"]
         return result
     except Exception as e:
-        print("가사가 아직 완성되지 않았습니다")
+        print("가사가 아직 완성되지 않았습니다", e)
+        return None
+
+def generate_lyrics_prompt_by_id(lyrics_id: str):
+    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
+
+    payload = {}
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+
+    response = json.loads(requests.request("GET", url, headers=headers, data=payload).text)
+
+    try:
+        result = json.loads(response["data"]["param"])["prompt"]
+        return result
+    except Exception as e:
+        print("가사가 아직 완성되지 않았습니다", e)
         return None
