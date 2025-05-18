@@ -8,7 +8,7 @@ def get_song_by_id(song_id: str):
     try:
         with engine.connect() as conn:
             result = conn.execute(
-                text("SELECT id, title, length FROM songs WHERE id = :id"),
+                text("SELECT id, title, length FROM sample_songs WHERE id = :id"),
                 {"id": song_id}
             ).fetchone() or {"message" : "해당 아이디의 노래는 존재하지 않습니다."}
 
