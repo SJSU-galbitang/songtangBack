@@ -35,8 +35,8 @@ def get_song_by_emotion(emotion = List[str]):
 
     _data = get_all_song()
     selected_data = [data for data in _data if list(data)[1] in emotion]
-    print(emotion)
-    selected_data = [selected_data[i] for i in range(value, 40, 2)]
+    print(len(selected_data))
+    selected_data = [selected_data[i] for i in range(value, len(selected_data), 2)]
 
     for i in range(20):
         data = selected_data[i]

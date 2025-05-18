@@ -26,7 +26,9 @@ def analyze_emotion(emotion):
     response = model.generate_content(prompt)
     emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
     ai_emotion = response.text.replace("\n", "").split(", ")
-    return emotions & set(ai_emotion)
+    result = list(set(ai_emotion) & emotions)
+    print(result)
+    return result
 
 # 감정 기반 가사 프롬프트 생성
 def generate_lyrics_prompt(emotion):
