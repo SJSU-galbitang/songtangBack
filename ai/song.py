@@ -25,7 +25,7 @@ def analyze_emotion(emotion):
     )
     response = model.generate_content(prompt)
     emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
-    ai_emotion = set(map(str.upper, response.text.replace("\n", "").split(", ")))
+    ai_emotion = set(map(str.lower, response.text.replace("\n", "").split(", ")))
     result = list(set(ai_emotion) & emotions)
     print(result)
     return result
