@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
-from songtangBack.service import song as service
+from service import song as service
 app =FastAPI()
 
 origins = [

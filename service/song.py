@@ -1,5 +1,5 @@
-from songtangBack.data import song as data
-from songtangBack.ai import song as ai
+from data import song as data
+from ai import song as ai
 
 def get_song_by_id(song_id: str) -> dict:
 
