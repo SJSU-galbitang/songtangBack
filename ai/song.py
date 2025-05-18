@@ -11,7 +11,7 @@ load_dotenv()
 
 # Gemini API 설정
 genai.configure(api_key=os.getenv("API_KEY"))
-model = genai.GenerativeModel(model_name="gemini-pro")
+model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 
 # 수노 API 토큰
 TOKEN = os.getenv("TOKEN")
@@ -48,8 +48,6 @@ def generate_lyrics_prompt(emotion):
 
 # 가사 생성 API 호출
 def generate_lyrics(emotion):
-    print("generate")
-
     prompts = generate_lyrics_prompt(emotion)
     lyrics_ids = []
 
@@ -73,7 +71,6 @@ def generate_lyrics(emotion):
             task_id = response_json.get("data", {}).get("taskId")
             if task_id:
                 lyrics_ids.append(task_id)
-                print(response_json)
             else:
                 print("taskId 없음:", response_json)
 

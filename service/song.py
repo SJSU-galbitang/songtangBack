@@ -20,9 +20,7 @@ def get_song_by_id(song_id: str) -> dict:
 def analyze_emotion(emotion):
     ai_emotion = ai.analyze_emotion(emotion)
     melodies = data.get_song_by_emotion(ai_emotion)
-    print("success 1")
     lyrics = ai.generate_lyrics(emotion)
-    print("success 2")
     return [melodies, lyrics]
 
 

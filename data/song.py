@@ -3,8 +3,9 @@ from typing import List
 from data import db_connect
 from sqlalchemy import create_engine, text
 
+engine = create_engine(db_connect.DATABASE_URL, echo=True)
+
 def get_song_by_id(song_id: str):
-    engine = create_engine(db_connect.DATABASE_URL, echo=True)
     try:
         with engine.connect() as conn:
             result = conn.execute(
@@ -19,10 +20,9 @@ def get_song_by_id(song_id: str):
         return None
 
 def get_all_song():
-    engine = create_engine(db_connect.DATABASE_URL, echo=True)
     try:
         with engine.connect() as conn:
-            result = conn.execute(text("SELECT * FROM sample_songs")).fetchall()
+            result = conn.execute(text("SELECT id, emotion, title, length FROM sample_songs")).fetchall()
             print("✅ 쿼리 실행 성공")
             return result
     except Exception as e:
@@ -30,21 +30,20 @@ def get_all_song():
         return None
 
 def get_song_by_emotion(emotion = List[str]):
-
     import random
-
     value = random.randint(0, 1)
 
     _data = get_all_song()
-    selected_data = [data for data in _data if data[3] in emotion]
+    selected_data = [data for data in _data if list(data)[1] in emotion]
+    print(emotion)
     selected_data = [selected_data[i] for i in range(value, 40, 2)]
 
     for i in range(20):
         data = selected_data[i]
         temp = {
             "id" : data[0],
-            "title" : data[1],
-            "length": f"{int(float(data[2]) // 60):02}:{int(float(data[2]) % 60):02}"
+            "title" : data[2],
+            "length": f"{int(float(data[3]) // 60):02}:{int(float(data[3]) % 60):02}"
         }
         selected_data[i] = temp
 
@@ -53,7 +52,6 @@ def get_song_by_emotion(emotion = List[str]):
     }
 
 def insert_song(id, title, length, emotion):
-    engine = create_engine(db_connect.DATABASE_URL, echo=True)
     try:
         with engine.connect() as conn:
             trans = conn.begin()
@@ -68,7 +66,6 @@ def insert_song(id, title, length, emotion):
 
 
 def get_song_prompt_by_id(melody_id):
-    engine = create_engine(db_connect.DATABASE_URL, echo=True)
     try:
         with engine.connect() as conn:
             result = conn.execute(
