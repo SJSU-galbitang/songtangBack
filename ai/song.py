@@ -25,9 +25,10 @@ def analyze_emotion(emotion):
     )
     response = model.generate_content(prompt)
     emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
-    ai_emotion = set(map(str.lower, response.text.replace("\n", "").split(", ")))
+    ai_emotion = map(str.lower, response.text.replace("\n", "").split(", "))
+    print("emotion", ai_emotion)
     result = list(set(ai_emotion) & emotions)
-    print(result)
+    print("result", result)
     return result
 
 # 감정 기반 가사 프롬프트 생성
