@@ -21,7 +21,7 @@ def analyze_emotion(emotion):
     prompt = (
         f"{emotion} 라는 문장에서 나타나는 감정이 "
         "sadness, anger, calm, excitement, hope, love, anxiety, joy 중에서 "
-        "어디에 속하는지 2개의 키워드로 알려줘. 다른말 하지말고 두개의 키워드만 콤마로 구분해서 알려줘 영어로 알려줘..."
+        "어디에 속하는지 2개의 키워드로 알려줘. 다른말 하지말고 두개의 키워드만 콤마로 구분해서 알려줘 영어로 알려줘 내가 말한 키워드 말고 다른 키워드는 쓰지마"
     )
     response = model.generate_content(prompt)
     emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
