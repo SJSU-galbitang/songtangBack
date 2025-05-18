@@ -5,8 +5,14 @@ import google.generativeai as genai
 
 import requests
 import json
+import os
+from dotenv import load_dotenv
 
-client = genai.Client(api_key="AIzaSyAFnfVMydG1Sx7Y0AQl6dzRsz7OtkgoxPo")
+load_dotenv()
+
+genai.configure(api_key= os.getenv("API_KEY"))
+
+model = genai.GenerativeModel(model_name="gemini-pro")
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
