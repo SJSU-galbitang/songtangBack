@@ -6,7 +6,8 @@ from service import song as service
 app =FastAPI()
 
 origins = [
-    "https://port-0-songtang-m2vzc8ul0ad93b09.sel4.cloudtype.app/"
+    "https://port-0-songtang-m2vzc8ul0ad93b09.sel4.cloudtype.app/",
+    "https://songtang.vercel.app/"
 ]
 
 app.add_middleware(
