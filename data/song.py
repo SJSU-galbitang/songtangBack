@@ -9,7 +9,7 @@ def get_song_by_id(song_id: str):
     try:
         with engine.connect() as conn:
             result = conn.execute(
-                text("SELECT id, title, length FROM sample_songs WHERE id = :id"),
+                text("SELECT id, title, length FROM songs WHERE id = :id"),
                 {"id": song_id}
             ).fetchone() or {"message" : "해당 아이디의 노래는 존재하지 않습니다."}
 
@@ -65,11 +65,11 @@ def insert_song(id, title, length, emotion):
         print("❌ 쿼리 실행 실패:", e)
 
 
-def get_song_prompts_by_id(melody_ids):
+def get_melody_info_by_id(melody_ids):
     try:
         with engine.connect() as conn:
             result = conn.execute(
-                text("SELECT prompt, style FROM sample_songs where id in :id"),{"id" : melody_ids}
+                text("SELECT prompt, style, emotion FROM sample_songs where id in :id"),{"id" : melody_ids}
             ).fetchall()
             print("✅ 쿼리 실행 성공")
 
@@ -77,3 +77,16 @@ def get_song_prompts_by_id(melody_ids):
     except Exception as e:
         print("❌ 쿼리 실행 실패:", e)
         return None
+
+def insert_data(id, title, length, prompt, style, emotion):
+    try:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(
+                text("INSERT INTO sample_songs (id, title, length, prompt, style, emotion) VALUES (:id, :title, :length, :prompt, :style, :emotion)"),
+                {"id": id, "title": title, "length": length, "prompt" : prompt, "style" : style, "emotion" : emotion}
+            )
+            trans.commit()
+        print("✅ 쿼리 실행 성공")
+    except Exception as e:
+        print("❌ 쿼리 실행 실패:", e)
