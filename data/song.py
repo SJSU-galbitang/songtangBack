@@ -10,7 +10,7 @@ engine = create_engine(db_connect.DATABASE_URL, echo=True)
 def get_melody_by_id(melody_id: str):
     with engine.connect() as conn:
         result = conn.execute(
-            text("SELECT id, title, length FROM sample_songs WHERE id = :id"),
+            text("SELECT id, title, length FROM songs WHERE id = :id"),
         {"id": melody_id}
         ).fetchone()
 
