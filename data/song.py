@@ -78,15 +78,21 @@ def get_melody_info_by_id(melody_ids):
         print("❌ 쿼리 실행 실패:", e)
         return None
 
-def insert_data(id, title, length, prompt, style, emotion):
+
+def insert_data(id, title, length, emotion):
     try:
         with engine.connect() as conn:
             trans = conn.begin()
-            conn.execute(
-                text("INSERT INTO sample_songs (id, title, length, prompt, style, emotion) VALUES (:id, :title, :length, :prompt, :style, :emotion)"),
-                {"id": id, "title": title, "length": length, "prompt" : prompt, "style" : style, "emotion" : emotion}
-            )
-            trans.commit()
-        print("✅ 쿼리 실행 성공")
+            try:
+                conn.execute(
+                    text(
+                        "INSERT INTO songs (id, title, length, emotion) VALUES (:id, :title, :length, :emotion)"),
+                    {"id": id, "title": title, "length": length, "emotion": emotion}
+                )
+                trans.commit()
+                print("✅ 쿼리 실행 성공")
+            except Exception as inner_e:
+                trans.rollback()
+                print("❌ 트랜잭션 실패, 롤백:", inner_e)
     except Exception as e:
-        print("❌ 쿼리 실행 실패:", e)
+        print("❌ 연결 또는 트랜잭션 시작 실패:", e)

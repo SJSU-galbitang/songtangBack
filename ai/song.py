@@ -116,7 +116,8 @@ def generate_lyrics_prompt_by_id(lyrics_id: str):
 
     try:
         response = requests.get(url, headers=headers)
-        response_json = response.json()
+        response_json = json.loads(response.text)
+        print("response_json", response_json)
         result = json.loads(response_json["data"]["param"])["prompt"]
         print("result", result)
         return result
@@ -182,7 +183,7 @@ def generate_one_song(lyrics_prompts, melody_prompts, emotion):
     #
     # print(response)
 
-    id = "014fcf19fd6019ab5121d322edb8b150"
+    id = "b017f554596ea2250c0947b5680a22bf"
 
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
 
@@ -207,7 +208,7 @@ def generate_one_song(lyrics_prompts, melody_prompts, emotion):
     prompt = json.loads(response["param"])["prompt"].replace("\n", "")
     style = json.loads(response["param"])["style"].replace("\n", "")
 
-    data.insert_data(title, id, length, prompt, style, emotion)
+    data.insert_data(id, title, length, emotion)
 
     return {
         "id": id,
