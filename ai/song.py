@@ -20,29 +20,7 @@ model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 # 수노 API 토큰
 TOKEN = os.getenv("TOKEN")
 
-# 가사 결과 가져오기
-def get_lyrics(lyrics_id):
-    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
-    headers = {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + TOKEN
-    }
-
-    response = requests.get(url, headers=headers)
-    print(type(response))
-    response = json.loads(response.text)
-
-    if type(response) == dict:
-        raise IdNotFoundException(msg="해당 아이디에 대한 가사 정보를 찾을 수 없습니다.")
-
-    value = random.randint(0, 1)
-
-    print(response.text)
-
-    result = response["data"]["response"]["data"][value]["text"]
-    return result
-
-# 감정 분석
+# gemini - 감정 분석
 def analyze_emotion(emotion):
     prompt = (
         f"{emotion} 라는 문장에서 나타나는 감정이 "
@@ -57,7 +35,7 @@ def analyze_emotion(emotion):
     print("result", result)
     return result
 
-# 감정 기반 가사 프롬프트 생성
+# gemini - 감정 기반 가사 프롬프트 생성
 def generate_lyrics_prompt(emotion):
     prompt = (
         f"{emotion} 라는 감정을 느끼고 있는 사람이 공감할 수 있을만한 "
@@ -77,7 +55,45 @@ def generate_lyrics_prompt(emotion):
         "lyrics": lyrics
     }
 
-# 가사 생성 API 호출
+# gemini - 여러개의 가사 프롬프트를 하나로
+def generate_one_lyrics(lyrics_prompts):
+    prompt = (
+        f"{lyrics_prompts} 라는 5개의 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
+        "예시 프롬프트의 모든 내용을 다 반영해줘. "
+        "너가 만든 프롬프트를 이용해서 수노를 이용해 노래 가사를 작성할거야. "
+        "1000자 이내로 작성해줘. 5개의 샘플 프롬프트를 한 문장으로 압축시켜줘 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
+    )
+    lyrics = model.generate_content(prompt).text
+    print("lyrics", lyrics)
+
+    return lyrics
+
+# gemini - 여러개의 멜로디 프롬프트를 하나로
+def generate_one_melody(melody_prompts):
+    prompt = (
+        f"{melody_prompts} 라는 10개의 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
+        "예시 프롬프트의 모든 내용을 다 반영해줘. "
+        "너가 만든 프롬프트를 이용해서 수노를 이용해 멜로디를 작성할거야. "
+        "1000자 이내로 작성해줘. 10개의 샘플 프롬프트를 한 문장으로 압축시켜줘. 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
+    )
+    melody = model.generate_content(prompt).text
+    print("melody", melody)
+
+    return melody
+
+# gemini - 가사, 멜로디 프롬프트로 제목 만들기
+def generate_title(lyrics_prompts, melody_prompts):
+    prompt = (
+        f"가사 프롬프트: {lyrics_prompts} "
+        f"멜로디 프롬프트: {melody_prompts} "
+        "저 가사와 멜로디 프롬프트로 노래 제목을 하나 만들어줘 "
+        "최소 1단어, 최대 5단어 이내로 제목을 작성해줘. 제목만 한 문장으로 출력하고 다른 말은 절대 하지마"
+    )
+    title = model.generate_content(prompt).text
+
+    return title
+
+# suno - 가사 생성 API 호출
 def generate_lyrics(emotion):
     prompts = generate_lyrics_prompt(emotion)
     lyrics_ids = []
@@ -110,8 +126,30 @@ def generate_lyrics(emotion):
 
     return lyrics_ids
 
-# 특정 가사 생성 요청에 사용된 프롬프트 가져오기
-def generate_lyrics_prompt_by_id(lyrics_id: str):
+# suno - noTOKEN - 가사 결과 가져오기
+def get_lyrics(lyrics_id):
+    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+
+    response = requests.get(url, headers=headers)
+    print(type(response))
+    response = json.loads(response.text)
+
+    if type(response) == dict:
+        raise IdNotFoundException(msg="해당 아이디에 대한 가사 정보를 찾을 수 없습니다.")
+
+    value = random.randint(0, 1)
+
+    print(response.text)
+
+    result = response["data"]["response"]["data"][value]["text"]
+    return result
+
+# suno - noTOKEN - 특정 가사 생성 요청에 사용된 프롬프트 가져오기
+def get_lyrics_prompt_by_id(lyrics_id: str):
     url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
     headers = {
         'Accept': 'application/json',
@@ -130,65 +168,31 @@ def generate_lyrics_prompt_by_id(lyrics_id: str):
         print("가사가 아직 완성되지 않았습니다:", e)
         return None
 
-def generate_one_lyrics(lyrics_prompts):
-    prompt = (
-        f"{lyrics_prompts} 라는 5개의 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
-        "예시 프롬프트의 모든 내용을 다 반영해줘. "
-        "너가 만든 프롬프트를 이용해서 수노를 이용해 노래 가사를 작성할거야. "
-        "1000자 이내로 작성해줘. 5개의 샘플 프롬프트를 한 문장으로 압축시켜줘 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
-    )
-    lyrics = model.generate_content(prompt).text
-    print("lyrics", lyrics)
-
-    return lyrics
-
-def generate_one_melody(melody_prompts):
-    prompt = (
-        f"{melody_prompts} 라는 10개의 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
-        "예시 프롬프트의 모든 내용을 다 반영해줘. "
-        "너가 만든 프롬프트를 이용해서 수노를 이용해 멜로디를 작성할거야. "
-        "1000자 이내로 작성해줘. 10개의 샘플 프롬프트를 한 문장으로 압축시켜줘. 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
-    )
-    melody = model.generate_content(prompt).text
-    print("melody", melody)
-
-    return melody
-
-def generate_title(lyrics_prompts, melody_prompts):
-    prompt = (
-        f"가사 프롬프트: {lyrics_prompts} "
-        f"멜로디 프롬프트: {melody_prompts} "
-        "저 가사와 멜로디 프롬프트로 노래 제목을 하나 만들어줘 "
-        "최소 1단어, 최대 5단어 이내로 제목을 작성해줘. 제목만 한 문장으로 출력하고 다른 말은 절대 하지마"
-    )
-    title = model.generate_content(prompt).text
-
-    return title
-
+# suno - 노래 만들기 api
 def generate_one_song(lyrics_prompts, melody_prompts, emotion):
-    url = "https://apibox.erweima.ai/api/v1/generate"
+    # url = "https://apibox.erweima.ai/api/v1/generate"
+    #
+    # payload = json.dumps({
+    #     "prompt": generate_one_lyrics(lyrics_prompts),
+    #     "style": generate_one_melody(melody_prompts),
+    #     "title": generate_title(lyrics_prompts, melody_prompts),
+    #     "customMode": True,
+    #     "instrumental": False,
+    #     "model": "V4_5",
+    #     "callBackUrl": "https://your-api.com/music-callback"
+    # })
+    #
+    # headers = {
+    #     'Content-Type': 'application/json',
+    #     'Accept': 'application/json',
+    #     'Authorization': 'Bearer ' + TOKEN
+    # }
+    # response = requests.request("POST", url, headers=headers, data=payload).text
+    #
+    # print(response)
 
-    payload = json.dumps({
-        "prompt": generate_one_lyrics(lyrics_prompts),
-        "style": generate_one_melody(melody_prompts),
-        "title": generate_title(lyrics_prompts, melody_prompts),
-        "customMode": True,
-        "instrumental": False,
-        "model": "V4_5",
-        "callBackUrl": "https://your-api.com/music-callback"
-    })
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + TOKEN
-    }
-    response = requests.request("POST", url, headers=headers, data=payload).text
-
-    print(response)
-
-    # id = "e61d50eb11ed332c1482e76584ff437c"
-    id = json.loads(response)["data"]["taskId"]
+    id = "6279102da0df35f950a30364904449e7"
+    # id = json.loads(response)["data"]["taskId"]
     print(id)
 
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
