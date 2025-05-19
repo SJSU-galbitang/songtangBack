@@ -1,22 +1,24 @@
 from typing import List
 
 from fastapi import FastAPI, Body
-from fastapi.middleware.cors import CORSMiddleware
 from service import song as service
-app =FastAPI()
+from fastapi.middleware.cors import CORSMiddleware
+app = FastAPI()
 
+# 허용할 origin 목록
 origins = [
-    "https://port-0-songtang-m2vzc8ul0ad93b09.sel4.cloudtype.app/",
+    "https://songtang.vercel.app/",
     "https://songtang.vercel.app",
-    "https://songtang.vercel.app/"
+    "http://localhost:5173"
 ]
 
+# CORS 미들웨어 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,            # 허용할 origin 목록
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],              # 모든 HTTP 메서드 허용 (GET, POST 등)
+    allow_headers=["*"],              # 모든 헤더 허용
 )
 
 @app.get("/song/{song_id}")
