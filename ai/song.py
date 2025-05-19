@@ -8,7 +8,7 @@ import google.generativeai as genai
 
 from data import song as data
 
-from Project.songtangBack.error import IdNotFoundException
+from error import IdNotFoundException
 
 # 환경 변수 로드
 load_dotenv()
