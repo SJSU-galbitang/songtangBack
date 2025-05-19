@@ -162,28 +162,29 @@ def generate_title(lyrics_prompts, melody_prompts):
     return title
 
 def generate_one_song(lyrics_prompts, melody_prompts, emotion):
-    # url = "https://apibox.erweima.ai/api/v1/generate"
-    #
-    # payload = json.dumps({
-    #     "prompt": generate_one_lyrics(lyrics_prompts),
-    #     "style": generate_one_melody(melody_prompts),
-    #     "title": generate_title(lyrics_prompts, melody_prompts),
-    #     "customMode": True,
-    #     "instrumental": False,
-    #     "model": "V4_5",
-    #     "callBackUrl": "https://your-api.com/music-callback"
-    # })
-    #
-    # headers = {
-    #     'Content-Type': 'application/json',
-    #     'Accept': 'application/json',
-    #     'Authorization': 'Bearer ' + TOKEN
-    # }
-    # response = requests.request("POST", url, headers=headers, data=payload).text
-    #
-    # print(response)
+    url = "https://apibox.erweima.ai/api/v1/generate"
 
-    id = "b017f554596ea2250c0947b5680a22bf"
+    payload = json.dumps({
+        "prompt": generate_one_lyrics(lyrics_prompts),
+        "style": generate_one_melody(melody_prompts),
+        "title": generate_title(lyrics_prompts, melody_prompts),
+        "customMode": True,
+        "instrumental": False,
+        "model": "V4_5",
+        "callBackUrl": "https://your-api.com/music-callback"
+    })
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+    response = requests.request("POST", url, headers=headers, data=payload).text
+
+    print(response)
+
+    # id = "b017f554596ea2250c0947b5680a22bf"
+    id = json.loads(response.text)["data"]["taskId"]
 
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
 
