@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import FastAPI, Body, HTTPException
 
-from Project.songtangBack.error import IdNotFoundException
+from error import IdNotFoundException
 from service import song as service
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
