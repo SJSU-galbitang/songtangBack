@@ -6,6 +6,8 @@ import random
 from dotenv import load_dotenv
 import google.generativeai as genai
 
+from data import song as data
+
 # 환경 변수 로드
 load_dotenv()
 
@@ -116,6 +118,7 @@ def generate_lyrics_prompt_by_id(lyrics_id: str):
         response = requests.get(url, headers=headers)
         response_json = response.json()
         result = json.loads(response_json["data"]["param"])["prompt"]
+        print("result", result)
         return result
 
     except Exception as e:
@@ -157,7 +160,7 @@ def generate_title(lyrics_prompts, melody_prompts):
 
     return title
 
-def generate_one_song(lyrics_prompts, melody_prompts):
+def generate_one_song(lyrics_prompts, melody_prompts, emotion):
     # url = "https://apibox.erweima.ai/api/v1/generate"
     #
     # payload = json.dumps({
@@ -196,18 +199,18 @@ def generate_one_song(lyrics_prompts, melody_prompts):
     import random
     value = random.randint(0, 1)
 
-    data = json.loads(response.text)["data"]
-    title = data['response']["sunoData"][value]["title"]
-    id = data['response']["sunoData"][value]['id']
-    duration = data['response']["sunoData"][value]["duration"]
-    prompt = json.loads(data["param"])["prompt"]
-    style = json.loads(data["param"])["style"]
-    result = {
-        "title": title,
-        "id": id,
-        "length": duration,
-        "prompt": prompt,
-        "style": style
-    }
+    response = json.loads(response.text)["data"]
+    id = response['response']["sunoData"][value]['id']
+    title = response['response']["sunoData"][value]["title"].replace("\n", "")
+    length = response['response']["sunoData"][value]["duration"]
+    length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
+    prompt = json.loads(response["param"])["prompt"].replace("\n", "")
+    style = json.loads(response["param"])["style"].replace("\n", "")
 
-    return result
+    data.insert_data(title, id, length, prompt, style, emotion)
+
+    return {
+        "id": id,
+        "title": title,
+        "length": length
+    }
