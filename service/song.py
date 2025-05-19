@@ -21,7 +21,11 @@ def analyze_emotion(emotion):
     ai_emotion = ai.analyze_emotion(emotion)
     melodies = data.get_song_by_emotion(ai_emotion)
     lyrics = ai.generate_lyrics(emotion)
-    return {melodies, lyrics}
+    return {
+        "melodies" : melodies,
+        "lyrics" : lyrics
+    }
+
 
 
 def get_lyrics_by_id(song_id):

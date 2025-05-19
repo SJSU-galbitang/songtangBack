@@ -84,7 +84,7 @@ def generate_lyrics(emotion):
         except Exception as e:
             print("요청 오류:", e)
 
-    return {"lyrics": lyrics_ids}
+    return lyrics_ids
 
 # 가사 결과 가져오기
 def get_lyric(lyrics_id):
@@ -183,8 +183,9 @@ def generate_one_song(lyrics_prompts, melody_prompts, emotion):
 
     print(response)
 
-    # id = "b017f554596ea2250c0947b5680a22bf"
+    # id = "e61d50eb11ed332c1482e76584ff437c"
     id = json.loads(response)["data"]["taskId"]
+    print(id)
 
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
 
@@ -201,18 +202,29 @@ def generate_one_song(lyrics_prompts, melody_prompts, emotion):
     import random
     value = random.randint(0, 1)
 
-    response = json.loads(response.text)["data"]
-    id = response['response']["sunoData"][value]['id']
-    title = response['response']["sunoData"][value]["title"].replace("\n", "")
-    length = response['response']["sunoData"][value]["duration"]
-    length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
-    prompt = json.loads(response["param"])["prompt"].replace("\n", "")
-    style = json.loads(response["param"])["style"].replace("\n", "")
+    try:
+        response = json.loads(response.text)["data"]
+        print(response)
+        id = response['response']["sunoData"][value]['id']
+        print(id)
+        title = response['response']["sunoData"][value]["title"].replace("\n", "")
+        print(title)
+        length = response['response']["sunoData"][value]["duration"]
+        print(length)
+        length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
+        print(length)
+        prompt = json.loads(response["param"])["prompt"].replace("\n", "")
+        print(prompt)
+        style = json.loads(response["param"])["style"].replace("\n", "")
+        print(style)
 
-    data.insert_data(id, title, length, emotion)
+        data.insert_data(id, title, length, emotion)
 
-    return {
-        "id": id,
-        "title": title,
-        "length": length
-    }
+        return {
+            "id": id,
+            "title": title,
+            "length": length
+        }
+    except Exception as e:
+        print("노래가 완성 안됨", e)
+        return {"message" : "노래가 완성 안됨"}

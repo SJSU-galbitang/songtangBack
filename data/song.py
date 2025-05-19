@@ -47,9 +47,7 @@ def get_song_by_emotion(emotion = List[str]):
         }
         selected_data[i] = temp
 
-    return {
-        "melodies" : selected_data
-    }
+    return selected_data
 
 def insert_song(id, title, length, emotion):
     try:
