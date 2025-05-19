@@ -25,12 +25,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/melody/{melody_id}")
-def get_melody_by_id(melody_id: str) -> dict:
+@app.get("/song/{song_id}")
+def get_song_by_id(song_id: str) -> dict:
     # 에러
     # 해당 아이디의 음악을 찾을 수 없을 때
     try:
-        result = service.get_melody_by_id(melody_id)
+        result = service.get_song_by_id(song_id)
         return result
     except IdNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.msg)
