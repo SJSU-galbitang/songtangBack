@@ -33,8 +33,6 @@ def generate_song(melody_ids, lyrics_ids):
     for lyrics_id in lyrics_ids:
         lyrics_prompts.append(ai.generate_lyrics_prompt_by_id(lyrics_id))
 
-    melody_prompts = []
-    for melody_id in melody_ids:
-        melody_prompts.append(data.get_song_prompt_by_id(melody_id))
+    melody_prompts = data.get_song_prompts_by_id(melody_ids)
 
-    return None
+    return ai.generate_one_song(lyrics_prompts, melody_prompts)

@@ -121,3 +121,60 @@ def generate_lyrics_prompt_by_id(lyrics_id: str):
     except Exception as e:
         print("가사가 아직 완성되지 않았습니다:", e)
         return None
+
+def generate_one_lyrics(lyrics_prompts):
+    prompt = (
+        f"{lyrics_prompts} 라는 5개의 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
+        "예시 프롬프트의 모든 내용을 다 반영해줘. "
+        "너가 만든 프롬프트를 이용해서 수노를 이용해 노래 가사를 작성할거야. "
+        "1000자 이내로 작성해줘. 5개의 샘플 프롬프트를 한 문장으로 압축시켜줘 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
+    )
+    lyrics = model.generate_content(prompt).text
+    print("lyrics", lyrics)
+
+    return lyrics
+
+def generate_one_melody(melody_prompts):
+    prompt = (
+        f"{melody_prompts} 라는 10개의 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
+        "예시 프롬프트의 모든 내용을 다 반영해줘. "
+        "너가 만든 프롬프트를 이용해서 수노를 이용해 멜로디를 작성할거야. "
+        "1000자 이내로 작성해줘. 10개의 샘플 프롬프트를 한 문장으로 압축시켜줘. 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
+    )
+    melody = model.generate_content(prompt).text
+    print("melody", melody)
+
+    return melody
+
+def generate_title(lyrics_prompts, melody_prompts):
+    prompt = (
+        f"가사 프롬프트: {lyrics_prompts} "
+        f"멜로디 프롬프트: {melody_prompts} "
+        "저 가사와 멜로디 프롬프트로 노래 제목을 하나 만들어줘 "
+        "최소 1단어, 최대 5단어 이내로 제목을 작성해줘. 제목만 한 문장으로 출력하고 다른 말은 절대 하지마"
+    )
+    title = model.generate_content(prompt).text
+
+    return title
+
+def generate_one_song(lyrics_prompts, melody_prompts):
+    url = "https://apibox.erweima.ai/api/v1/generate"
+
+    payload = json.dumps({
+        "prompt": generate_one_lyrics(lyrics_prompts),
+        "style": generate_one_melody(melody_prompts),
+        "title": generate_title(lyrics_prompts, melody_prompts),
+        "customMode": True,
+        "instrumental": False,
+        "model": "V4_5",
+        "callBackUrl": "https://your-api.com/music-callback"
+    })
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+    response = requests.request("POST", url, headers=headers, data=payload).text
+
+    print(response)

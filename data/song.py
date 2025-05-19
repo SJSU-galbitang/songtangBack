@@ -65,13 +65,14 @@ def insert_song(id, title, length, emotion):
         print("❌ 쿼리 실행 실패:", e)
 
 
-def get_song_prompt_by_id(melody_id):
+def get_song_prompts_by_id(melody_ids):
     try:
         with engine.connect() as conn:
             result = conn.execute(
-                text("SELECT prompt, style FROM where id = :id"),{"id" : melody_id}
-            ).fetchone()
+                text("SELECT prompt, style FROM sample_songs where id in :id"),{"id" : melody_ids}
+            ).fetchall()
             print("✅ 쿼리 실행 성공")
+
             return result
     except Exception as e:
         print("❌ 쿼리 실행 실패:", e)
