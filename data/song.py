@@ -3,21 +3,21 @@ from typing import List
 from data import db_connect
 from sqlalchemy import create_engine, text
 
+from Project.songtangBack.error import IdNotFoundException
+
 engine = create_engine(db_connect.DATABASE_URL, echo=True)
 
-def get_song_by_id(song_id: str):
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(
-                text("SELECT id, title, length FROM songs WHERE id = :id"),
-                {"id": song_id}
-            ).fetchone() or {"message" : "해당 아이디의 노래는 존재하지 않습니다."}
+def get_melody_by_id(melody_id: str):
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT id, title, length FROM sample_songs WHERE id = :id"),
+        {"id": melody_id}
+        ).fetchone()
 
-            print("✅ 쿼리 실행 성공")
-            return result
-    except Exception as e:
-        print("❌ 쿼리 실행 실패:", e)
-        return None
+        if result is None:
+            raise IdNotFoundException(msg="해당 아이디에 대한 멜로디 정보를 찾을 수 없습니다.")
+
+        return result
 
 def get_all_song():
     try:
@@ -62,7 +62,6 @@ def insert_song(id, title, length, emotion):
     except Exception as e:
         print("❌ 쿼리 실행 실패:", e)
 
-
 def get_melody_info_by_id(melody_ids):
     try:
         with engine.connect() as conn:
@@ -75,7 +74,6 @@ def get_melody_info_by_id(melody_ids):
     except Exception as e:
         print("❌ 쿼리 실행 실패:", e)
         return None
-
 
 def insert_data(id, title, length, emotion):
     try:

@@ -1,13 +1,9 @@
 from data import song as data
 from ai import song as ai
 
-def get_song_by_id(song_id: str) -> dict:
+def get_melody_by_id(melody_id):
 
-    result = data.get_song_by_id(song_id)
-    if type(result) == dict:
-        return result
-
-    id, title, length = data.get_song_by_id(song_id)
+    id, title, length = data.get_melody_by_id(melody_id)
     length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
 
     return {
@@ -16,6 +12,8 @@ def get_song_by_id(song_id: str) -> dict:
         "length" : length
     }
 
+def get_lyrics_by_id(song_id):
+    return {"lyrics" : ai.get_lyrics(song_id)}
 
 def analyze_emotion(emotion):
     ai_emotion = ai.analyze_emotion(emotion)
@@ -25,11 +23,6 @@ def analyze_emotion(emotion):
         "melodies" : melodies,
         "lyrics" : lyrics
     }
-
-
-
-def get_lyrics_by_id(song_id):
-    return {"lyrics" : ai.get_lyric(song_id)}
 
 def generate_song(melody_ids, lyrics_ids):
 

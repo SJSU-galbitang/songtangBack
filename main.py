@@ -1,6 +1,8 @@
 from typing import List
 
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, HTTPException
+
+from Project.songtangBack.error import IdNotFoundException
 from service import song as service
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
@@ -10,27 +12,42 @@ origins = [
     "https://songtang.vercel.app/",
     "https://songtang.vercel.app",
     "http://localhost:5173"
+
 ]
 
 # CORS 미들웨어 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,            # 허용할 origin 목록
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],              # 모든 HTTP 메서드 허용 (GET, POST 등)
-    allow_headers=["*"],              # 모든 헤더 허용
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
-@app.get("/song/{song_id}")
-def get_song_by_id(song_id: str) -> dict:
-    return service.get_song_by_id(song_id)
+@app.get("/melody/{melody_id}")
+def get_melody_by_id(melody_id: str) -> dict:
+    # 에러
+    # 해당 아이디의 음악을 찾을 수 없을 때
+    try:
+        result = service.get_melody_by_id(melody_id)
+        return result
+    except IdNotFoundException as e:
+        raise HTTPException(status_code=404, detail=e.msg)
 
-@app.get("/lyrics/{song_id}")
-def get_lyrics_by_id(song_id: str):
-    return service.get_lyrics_by_id(song_id)
+@app.get("/lyrics/{lyrics_id}")
+def get_lyrics_by_id(lyrics_id):
+    # 에러
+    # 해당 아이디의 음악을 찾을 수 없을 때
+    try:
+        result = service.get_lyrics_by_id(lyrics_id)
+        return result
+    except IdNotFoundException as e:
+        raise HTTPException(status_code=404, detail=e.msg)
 
 @app.get("/survey")
 def analyze_emotion(emotion):
+    # 에러
+    #
     return service.analyze_emotion(emotion)
 
 @app.post("/song")

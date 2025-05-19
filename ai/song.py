@@ -8,6 +8,8 @@ import google.generativeai as genai
 
 from data import song as data
 
+from Project.songtangBack.error import IdNotFoundException
+
 # 환경 변수 로드
 load_dotenv()
 
@@ -17,6 +19,28 @@ model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 
 # 수노 API 토큰
 TOKEN = os.getenv("TOKEN")
+
+# 가사 결과 가져오기
+def get_lyrics(lyrics_id):
+    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+
+    response = requests.get(url, headers=headers)
+    print(type(response))
+    response = json.loads(response.text)
+
+    if type(response) == dict:
+        raise IdNotFoundException(msg="해당 아이디에 대한 가사 정보를 찾을 수 없습니다.")
+
+    value = random.randint(0, 1)
+
+    print(response.text)
+
+    result = response["data"]["response"]["data"][value]["text"]
+    return result
 
 # 감정 분석
 def analyze_emotion(emotion):
@@ -85,26 +109,6 @@ def generate_lyrics(emotion):
             print("요청 오류:", e)
 
     return lyrics_ids
-
-# 가사 결과 가져오기
-def get_lyric(lyrics_id):
-    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
-    headers = {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + TOKEN
-    }
-
-    try:
-        response = requests.get(url, headers=headers)
-        response_json = response.json()
-
-        value = random.randint(0, 1)
-        result = response_json["data"]["response"]["data"][value]["text"]
-        return result
-
-    except Exception as e:
-        print("가사가 아직 완성되지 않았습니다:", e)
-        return None
 
 # 특정 가사 생성 요청에 사용된 프롬프트 가져오기
 def generate_lyrics_prompt_by_id(lyrics_id: str):
