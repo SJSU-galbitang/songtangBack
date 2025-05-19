@@ -158,23 +158,56 @@ def generate_title(lyrics_prompts, melody_prompts):
     return title
 
 def generate_one_song(lyrics_prompts, melody_prompts):
-    url = "https://apibox.erweima.ai/api/v1/generate"
+    # url = "https://apibox.erweima.ai/api/v1/generate"
+    #
+    # payload = json.dumps({
+    #     "prompt": generate_one_lyrics(lyrics_prompts),
+    #     "style": generate_one_melody(melody_prompts),
+    #     "title": generate_title(lyrics_prompts, melody_prompts),
+    #     "customMode": True,
+    #     "instrumental": False,
+    #     "model": "V4_5",
+    #     "callBackUrl": "https://your-api.com/music-callback"
+    # })
+    #
+    # headers = {
+    #     'Content-Type': 'application/json',
+    #     'Accept': 'application/json',
+    #     'Authorization': 'Bearer ' + TOKEN
+    # }
+    # response = requests.request("POST", url, headers=headers, data=payload).text
+    #
+    # print(response)
 
-    payload = json.dumps({
-        "prompt": generate_one_lyrics(lyrics_prompts),
-        "style": generate_one_melody(melody_prompts),
-        "title": generate_title(lyrics_prompts, melody_prompts),
-        "customMode": True,
-        "instrumental": False,
-        "model": "V4_5",
-        "callBackUrl": "https://your-api.com/music-callback"
-    })
+    id = "014fcf19fd6019ab5121d322edb8b150"
 
+    url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
+
+    payload = {}
     headers = {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer ' + TOKEN
     }
-    response = requests.request("POST", url, headers=headers, data=payload).text
 
-    print(response)
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    print(response.text)
+
+    import random
+    value = random.randint(0, 1)
+
+    data = json.loads(response.text)["data"]
+    title = data['response']["sunoData"][value]["title"]
+    id = data['response']["sunoData"][value]['id']
+    duration = data['response']["sunoData"][value]["duration"]
+    prompt = json.loads(data["param"])["prompt"]
+    style = json.loads(data["param"])["style"]
+    result = {
+        "title": title,
+        "id": id,
+        "length": duration,
+        "prompt": prompt,
+        "style": style
+    }
+
+    return result
