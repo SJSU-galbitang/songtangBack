@@ -184,7 +184,7 @@ def generate_one_song(lyrics_prompts, melody_prompts, emotion):
     print(response)
 
     # id = "b017f554596ea2250c0947b5680a22bf"
-    id = json.loads(response.text)["data"]["taskId"]
+    id = json.loads(response)["data"]["taskId"]
 
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
 
