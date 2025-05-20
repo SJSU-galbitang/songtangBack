@@ -1,9 +1,13 @@
+import json
 from typing import List
 
 from data import song as data
 from ai import song as ai
 
 from error import InsufficientInputDataException, SQLError, InvalidGeminiResponseException
+
+from Project.songtangBack.error import InvalidEmotionResultException
+
 
 def get_song_by_id(song_id):
 
@@ -39,10 +43,45 @@ def get_song_by_emotion(emotion = List[str]):
 
     return selected_data
 
+def process_emotion(emotion):
+    for i in range(5):
+        response = ai.analyze_emotion(emotion)
+        emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
+        ai_emotion = list(map(str.lower, response.text.replace("\n", "").split(", ")))
+        result = list(set(ai_emotion) & emotions)
+
+        if len(result) == 2:
+            return result
+
+        if i == 4:
+            raise InvalidEmotionResultException(msg="제미나이 감정 분석 결과가 잘못되었습니다.")
+
+    return None
+
+def process_lyrics(emotion):
+    prompt = ai.generate_lyrics_prompt(emotion)
+
+    import re
+    lines = re.split(r'[\n\r]', prompt)
+    prompts = [line.split('.', 1)[-1].strip() for line in lines if '.' in line]
+
+    lyrics_ids = []
+
+    for prompt in prompts:
+        response = ai.generate_lyrics(prompt)
+        task_id = response.get("data", {}).get("taskId")
+
+        if task_id:
+            lyrics_ids.append(task_id)
+        else:
+            print("taskId 없음:", response)
+
+    return lyrics_ids
+
 def analyze_emotion(emotion):
-    ai_emotion = ai.analyze_emotion(emotion)
+    ai_emotion = process_emotion(emotion)
     melodies = get_song_by_emotion(ai_emotion)
-    lyrics = ai.generate_lyrics(emotion)
+    lyrics = process_lyrics(emotion)
 
     if len(melodies) != 20:
         raise SQLError(msg=f"멜로디 개수가 20개가 아님 {len(melodies)} 개 입니다")

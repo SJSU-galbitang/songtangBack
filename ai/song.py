@@ -44,60 +44,46 @@ def get_lyrics(lyrics_id):
 
 # gemini - 감정 분석
 def analyze_emotion(emotion):
-
-    for i in range(5):
-        prompt = (
-            f"{emotion} 라는 문장에서 나타나는 감정이 "
-            "sadness, anger, calm, excitement, hope, love, anxiety, joy 중에서 "
-            "어디에 속하는지 2개의 키워드로 알려줘. 다른말 하지말고 두개의 키워드만 콤마로 구분해서 알려줘 영어로 알려줘 내가 말한 키워드 말고 다른 키워드는 쓰지마"
-        )
-        response = model.generate_content(prompt)
-        emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
-        ai_emotion = list(map(str.lower, response.text.replace("\n", "").split(", ")))
-        print("emotion", ai_emotion)
-        result = list(set(ai_emotion) & emotions)
-        print("result", result)
-
-        if len(result) == 2:
-            return result
-
-        if i == 4:
-            raise InvalidEmotionResultException(msg="제미나이 감정 분석 결과가 잘못되었습니다.")
-
-    return None
+    prompt = (
+        f"{emotion} 라는 문장에서 나타나는 감정이 "
+        "sadness, anger, calm, excitement, hope, love, anxiety, joy 중에서 "
+        "어디에 속하는지 2개의 키워드로 알려줘. 다른말 하지말고 두개의 키워드만 콤마로 구분해서 알려줘 영어로 알려줘 내가 말한 키워드 말고 다른 키워드는 쓰지마"
+    )
+    return model.generate_content(prompt)
 
 # suno - 가사 생성 API 호출
-def generate_lyrics(emotion):
-    prompts = generate_lyrics_prompt(emotion)
-    lyrics_ids = []
-
+def generate_lyrics(prompt):
     url = "https://apibox.erweima.ai/api/v1/lyrics"
 
-    for prompt in prompts["lyrics"]:
-        payload = json.dumps({
-            "prompt": prompt,
-            "callBackUrl": "https://api.example.com/callback"
-        })
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + TOKEN
-        }
+    payload = json.dumps({
+        "prompt": prompt,
+        "callBackUrl": "https://api.example.com/callback"
+    })
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
 
-        try:
-            response = requests.post(url, headers=headers, data=payload)
-            response_json = response.json()
+    response = requests.post(url, headers=headers, data=payload)
+    response = json.loads(response.text)
 
-            task_id = response_json.get("data", {}).get("taskId")
-            if task_id:
-                lyrics_ids.append(task_id)
-            else:
-                print("taskId 없음:", response_json)
+    return response
 
-        except Exception as e:
-            print("요청 오류:", e)
+# gemini - 감정 기반 가사 프롬프트 생성
+def generate_lyrics_prompt(emotion):
+    prompt = (
+        f"{emotion} 라는 감정을 느끼고 있는 사람이 공감할 수 있을만한 "
+        "노래 가사를 위한 프롬프트 10개 만들어줘 다른 말은 하지말고 프롬프트만 10개 줘 "
+        "너가 만든 프롬프트를 이용해서 수노를 이용해 노래 가사를 작성할거야. "
+        "좀 더 구체적으로 적어줘. 사용자의 감정에 맞는 노래 가사를 알아낼거야. 예시는 필요없어. "
+        "다양한 스타일을 표현해줘. 사용자의 감정도 좋지만 사용자가 선호하는 가사 스타일을 "
+        "찾는데 초점을 맞춰줘. 그냥 다른 문자 없이 한줄로 적어줘. 앞에 숫자하고 . 만 붙여 그리고 영어로 써줘"
+    )
+    response = model.generate_content(prompt)
+    result = response.text
 
-    return lyrics_ids
+    return result
 
 # suno - noTOKEN - 특정 가사 생성 요청에 사용된 프롬프트 가져오기
 def get_lyrics_prompt_by_id(lyrics_id: str):
@@ -118,26 +104,6 @@ def get_lyrics_prompt_by_id(lyrics_id: str):
     except Exception as e:
         print("가사가 아직 완성되지 않았습니다:", e)
         return None
-
-# gemini - 감정 기반 가사 프롬프트 생성
-def generate_lyrics_prompt(emotion):
-    prompt = (
-        f"{emotion} 라는 감정을 느끼고 있는 사람이 공감할 수 있을만한 "
-        "노래 가사를 위한 프롬프트 10개 만들어줘 다른 말은 하지말고 프롬프트만 10개 줘 "
-        "너가 만든 프롬프트를 이용해서 수노를 이용해 노래 가사를 작성할거야. "
-        "좀 더 구체적으로 적어줘. 사용자의 감정에 맞는 노래 가사를 알아낼거야. 예시는 필요없어. "
-        "다양한 스타일을 표현해줘. 사용자의 감정도 좋지만 사용자가 선호하는 가사 스타일을 "
-        "찾는데 초점을 맞춰줘. 그냥 다른 문자 없이 한줄로 적어줘. 앞에 숫자하고 . 만 붙여 그리고 영어로 써줘"
-    )
-    response = model.generate_content(prompt)
-
-    result = response.text
-    lines = re.split(r'\n|\r', result)
-    lyrics = [line.split('.', 1)[-1].strip() for line in lines if '.' in line]
-
-    return {
-        "lyrics": lyrics
-    }
 
 # gemini - 여러개의 가사 프롬프트를 하나로
 def generate_one_lyrics(lyrics_prompts):
