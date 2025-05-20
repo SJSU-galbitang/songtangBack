@@ -2,8 +2,7 @@ from typing import List
 
 from fastapi import FastAPI, Body, HTTPException
 
-from error import InvalidEmotionResultException, InsufficientInputDataException
-from error import IdNotFoundException
+from error import InvalidEmotionResultException, InsufficientInputDataException, IdNotFoundException
 from service import song as service
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()

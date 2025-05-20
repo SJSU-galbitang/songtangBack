@@ -1,7 +1,7 @@
 from data import song as data
 from ai import song as ai
 
-from Project.songtangBack.error import InsufficientInputDataException
+from error import InsufficientInputDataException, SQLError, InvalidGeminiResponseException
 
 
 def get_song_by_id(song_id):
@@ -22,6 +22,13 @@ def analyze_emotion(emotion):
     ai_emotion = ai.analyze_emotion(emotion)
     melodies = data.get_song_by_emotion(ai_emotion)
     lyrics = ai.generate_lyrics(emotion)
+
+    if len(melodies) != 20:
+        raise SQLError(msg=f"멜로디 개수가 20개가 아님 {len(melodies)} 개 입니다")
+
+    if len(lyrics) != 10:
+        raise InvalidGeminiResponseException(msg=f"가사 개수가 10개가 아님 {len(lyrics)} 개 입니다")
+
     return {
         "melodies" : melodies,
         "lyrics" : lyrics
@@ -38,9 +45,22 @@ def generate_song(melody_ids, lyrics_ids):
     lyrics_prompts = []
     for lyrics_id in lyrics_ids:
         lyrics_prompts.append(ai.get_lyrics_prompt_by_id(lyrics_id))
+    lyrics_prompt = ai.generate_one_lyrics(lyrics_prompts)
 
     melody_info = data.get_melody_info_by_id(melody_ids)
     melody_params = [prompt + style for prompt, style, _ in melody_info]
-    melody_emotion = max([emotion for _, _, emotion in melody_info])
+    melody_prompt = ai.generate_one_melody(melody_params)
 
-    return ai.generate_one_song(lyrics_prompts, melody_params, melody_emotion)
+    title = ai.generate_title(lyrics_prompt, melody_prompt)
+
+    id = ai.generate_song(lyrics_prompt, melody_prompt, title)
+
+    emotion = max([emotion for _, _, emotion in melody_info])
+
+    # data.insert_data(id, title, "00:00", emotion)
+
+    return {
+        "id" : id,
+        "title" : title,
+        "length" : "00:00"
+    }

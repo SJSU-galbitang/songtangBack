@@ -20,6 +20,28 @@ model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 # 수노 API 토큰
 TOKEN = os.getenv("TOKEN")
 
+# suno - noTOKEN - 가사 결과 가져오기
+def get_lyrics(lyrics_id):
+    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+
+    response = requests.get(url, headers=headers)
+    print(type(response))
+    response = json.loads(response.text)
+
+    if type(response) == dict:
+        raise IdNotFoundException(msg="해당 아이디에 대한 가사 정보를 찾을 수 없습니다.")
+
+    value = random.randint(0, 1)
+
+    print(response.text)
+
+    result = response["data"]["response"]["data"][value]["text"]
+    return result
+
 # gemini - 감정 분석
 def analyze_emotion(emotion):
 
@@ -43,6 +65,63 @@ def analyze_emotion(emotion):
             raise InvalidEmotionResultException(msg="제미나이 감정 분석 결과가 잘못되었습니다.")
 
     return None
+
+# suno - 가사 생성 API 호출
+def generate_lyrics(emotion):
+    prompts = generate_lyrics_prompt(emotion)
+    lyrics_ids = []
+
+    url = "https://apibox.erweima.ai/api/v1/lyrics"
+
+    for prompt in prompts["lyrics"]:
+        payload = json.dumps({
+            "prompt": prompt,
+            "callBackUrl": "https://api.example.com/callback"
+        })
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + TOKEN
+        }
+
+        try:
+            response = requests.post(url, headers=headers, data=payload)
+            response_json = response.json()
+
+            task_id = response_json.get("data", {}).get("taskId")
+            if task_id:
+                lyrics_ids.append(task_id)
+            else:
+                print("taskId 없음:", response_json)
+
+        except Exception as e:
+            print("요청 오류:", e)
+
+    return lyrics_ids
+
+# suno - noTOKEN - 특정 가사 생성 요청에 사용된 프롬프트 가져오기
+def get_lyrics_prompt_by_id(lyrics_id: str):
+    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        response_json = json.loads(response.text)
+        print("response_json", response_json)
+        result = json.loads(response_json["data"]["param"])["prompt"]
+        print("result", result)
+        return result
+
+    except Exception as e:
+        print("가사가 아직 완성되지 않았습니다:", e)
+        return None
+
+
+
+
 
 # gemini - 감정 기반 가사 프롬프트 생성
 def generate_lyrics_prompt(emotion):
@@ -102,89 +181,14 @@ def generate_title(lyrics_prompts, melody_prompts):
 
     return title
 
-# suno - 가사 생성 API 호출
-def generate_lyrics(emotion):
-    prompts = generate_lyrics_prompt(emotion)
-    lyrics_ids = []
 
-    url = "https://apibox.erweima.ai/api/v1/lyrics"
-
-    for prompt in prompts["lyrics"]:
-        payload = json.dumps({
-            "prompt": prompt,
-            "callBackUrl": "https://api.example.com/callback"
-        })
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + TOKEN
-        }
-
-        try:
-            response = requests.post(url, headers=headers, data=payload)
-            response_json = response.json()
-
-            task_id = response_json.get("data", {}).get("taskId")
-            if task_id:
-                lyrics_ids.append(task_id)
-            else:
-                print("taskId 없음:", response_json)
-
-        except Exception as e:
-            print("요청 오류:", e)
-
-    return lyrics_ids
-
-# suno - noTOKEN - 가사 결과 가져오기
-def get_lyrics(lyrics_id):
-    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
-    headers = {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + TOKEN
-    }
-
-    response = requests.get(url, headers=headers)
-    print(type(response))
-    response = json.loads(response.text)
-
-    if type(response) == dict:
-        raise IdNotFoundException(msg="해당 아이디에 대한 가사 정보를 찾을 수 없습니다.")
-
-    value = random.randint(0, 1)
-
-    print(response.text)
-
-    result = response["data"]["response"]["data"][value]["text"]
-    return result
-
-# suno - noTOKEN - 특정 가사 생성 요청에 사용된 프롬프트 가져오기
-def get_lyrics_prompt_by_id(lyrics_id: str):
-    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={lyrics_id}"
-    headers = {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + TOKEN
-    }
-
-    try:
-        response = requests.get(url, headers=headers)
-        response_json = json.loads(response.text)
-        print("response_json", response_json)
-        result = json.loads(response_json["data"]["param"])["prompt"]
-        print("result", result)
-        return result
-
-    except Exception as e:
-        print("가사가 아직 완성되지 않았습니다:", e)
-        return None
-
-# suno - 노래 만들기 api
-def generate_one_song(lyrics_prompts, melody_prompts, emotion):
+def generate_song(lyrics_prompt, melody_prompt, title):
     # url = "https://apibox.erweima.ai/api/v1/generate"
     #
     # payload = json.dumps({
-    #     "prompt": generate_one_lyrics(lyrics_prompts),
-    #     "style": generate_one_melody(melody_prompts),
-    #     "title": generate_title(lyrics_prompts, melody_prompts),
+    #     "prompt": lyrics_prompt,
+    #     "style": melody_prompt,
+    #     "title": title,
     #     "customMode": True,
     #     "instrumental": False,
     #     "model": "V4_5",
@@ -203,7 +207,10 @@ def generate_one_song(lyrics_prompts, melody_prompts, emotion):
     id = "6279102da0df35f950a30364904449e7"
     # id = json.loads(response)["data"]["taskId"]
     print(id)
+    return id
 
+# suno - 노래 만들기 api
+def generate_one_song(id):
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
 
     payload = {}
@@ -219,29 +226,16 @@ def generate_one_song(lyrics_prompts, melody_prompts, emotion):
     import random
     value = random.randint(0, 1)
 
-    try:
-        response = json.loads(response.text)["data"]
-        print(response)
-        id = response['response']["sunoData"][value]['id']
-        print(id)
-        title = response['response']["sunoData"][value]["title"].replace("\n", "")
-        print(title)
-        length = response['response']["sunoData"][value]["duration"]
-        print(length)
-        length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
-        print(length)
-        prompt = json.loads(response["param"])["prompt"].replace("\n", "")
-        print(prompt)
-        style = json.loads(response["param"])["style"].replace("\n", "")
-        print(style)
+    response = json.loads(response.text)["data"]
+    id = response['response']["sunoData"][value]['id']
+    title = response['response']["sunoData"][value]["title"].replace("\n", "")
+    length = response['response']["sunoData"][value]["duration"]
+    length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
+    # prompt = json.loads(response["param"])["prompt"].replace("\n", "")
+    # style = json.loads(response["param"])["style"].replace("\n", "")
 
-        data.insert_data(id, title, length, emotion)
-
-        return {
-            "id": id,
-            "title": title,
-            "length": length
-        }
-    except Exception as e:
-        print("노래가 완성 안됨", e)
-        return {"message" : "노래가 완성 안됨"}
+    return {
+        "id": id,
+        "title": title,
+        "length": length
+    }

@@ -49,19 +49,6 @@ def get_song_by_emotion(emotion = List[str]):
 
     return selected_data
 
-def insert_song(id, title, length, emotion):
-    try:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(
-                text("INSERT INTO sample_songs (id, title, length, emotion) VALUES (:id, :title, :length, :emotion)"),
-                {"id": id, "title": title, "length": length, "emotion" : emotion}
-            )
-            trans.commit()
-            print("✅ 쿼리 실행 성공")
-    except Exception as e:
-        print("❌ 쿼리 실행 실패:", e)
-
 def get_melody_info_by_id(melody_ids):
     try:
         with engine.connect() as conn:
