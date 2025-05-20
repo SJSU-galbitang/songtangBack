@@ -5,6 +5,8 @@ from sqlalchemy import create_engine, text
 
 from error import IdNotFoundException
 
+from Project.songtangBack.error import SQLError
+
 engine = create_engine(db_connect.DATABASE_URL, echo=True)
 
 def get_melody_by_id(melody_id: str):
@@ -20,47 +22,26 @@ def get_melody_by_id(melody_id: str):
         return result
 
 def get_all_song():
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(text("SELECT id, emotion, title, length FROM sample_songs")).fetchall()
-            print("✅ 쿼리 실행 성공")
-            return result
-    except Exception as e:
-        print("❌ 쿼리 실행 실패:", e)
-        return None
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT id, emotion, title, length FROM sample_songs")).fetchall()
+        print("✅ 쿼리 실행 성공")
 
-def get_song_by_emotion(emotion = List[str]):
-    import random
-    value = random.randint(0, 1)
+        if result == []:
+            raise SQLError(msg="sample_songs 테이블에 저장된 값이 없습니다.")
 
-    _data = get_all_song()
-    selected_data = [data for data in _data if list(data)[1] in emotion]
-    print(len(selected_data))
-    selected_data = [selected_data[i] for i in range(value, len(selected_data), 2)]
-
-    for i in range(20):
-        data = selected_data[i]
-        temp = {
-            "id" : data[0],
-            "title" : data[2],
-            "length": f"{int(float(data[3]) // 60):02}:{int(float(data[3]) % 60):02}"
-        }
-        selected_data[i] = temp
-
-    return selected_data
+        return result
 
 def get_melody_info_by_id(melody_ids):
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(
-                text("SELECT prompt, style, emotion FROM sample_songs where id in :id"),{"id" : melody_ids}
-            ).fetchall()
-            print("✅ 쿼리 실행 성공")
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT prompt, style, emotion FROM sample_songs where id in :id"),{"id" : melody_ids}
+        ).fetchall()
+        print("✅ 쿼리 실행 성공")
 
-            return result
-    except Exception as e:
-        print("❌ 쿼리 실행 실패:", e)
-        return None
+        if len(result) != len(melody_ids):
+            raise SQLError(msg=f"제공하신 멜로디 아이디 {len(melody_ids)} 개 중 {len(result)} 만 유효합니다.")
+
+        return result
 
 def insert_data(id, title, length, emotion):
     try:

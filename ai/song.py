@@ -206,7 +206,7 @@ def generate_song(lyrics_prompt, melody_prompt, title):
     return id
 
 # suno - 노래 만들기 api
-def generate_song_by_prompt(id):
+def get_song_info_by_id(id):
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
 
     payload = {}

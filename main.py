@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import FastAPI, Body, HTTPException
 
+from Project.songtangBack.error import SQLError
 from error import InvalidEmotionResultException, InsufficientInputDataException, IdNotFoundException
 from service import song as service
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,6 +53,9 @@ def analyze_emotion(emotion):
     #     return service.analyze_emotion(emotion)
     # except InvalidEmotionResultException as e:
     #     raise HTTPException(status_code=500, detail=e.msg)
+    # except SQLError as e:
+    #     raise HTTPException(status_code=500, detail=e.msg)
+
     return {
         "melodies": [
             {

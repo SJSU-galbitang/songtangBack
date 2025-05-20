@@ -1,8 +1,9 @@
+from typing import List
+
 from data import song as data
 from ai import song as ai
 
 from error import InsufficientInputDataException, SQLError, InvalidGeminiResponseException
-
 
 def get_song_by_id(song_id):
 
@@ -18,9 +19,29 @@ def get_song_by_id(song_id):
 def get_lyrics_by_id(song_id):
     return {"lyrics" : ai.get_lyrics(song_id)}
 
+def get_song_by_emotion(emotion = List[str]):
+    import random
+    value = random.randint(0, 1)
+
+    _data = data.get_all_song()
+    selected_data = [data for data in _data if list(data)[1] in emotion]
+    print(len(selected_data))
+    selected_data = [selected_data[i] for i in range(value, len(selected_data), 2)]
+
+    for i in range(20):
+        sample = selected_data[i]
+        temp = {
+            "id" : sample[0],
+            "title" : sample[2],
+            "length": f"{int(float(sample[3]) // 60):02}:{int(float(sample[3]) % 60):02}"
+        }
+        selected_data[i] = temp
+
+    return selected_data
+
 def analyze_emotion(emotion):
     ai_emotion = ai.analyze_emotion(emotion)
-    melodies = data.get_song_by_emotion(ai_emotion)
+    melodies = get_song_by_emotion(ai_emotion)
     lyrics = ai.generate_lyrics(emotion)
 
     if len(melodies) != 20:
@@ -59,8 +80,4 @@ def generate_song(melody_ids, lyrics_ids):
 
     # data.insert_data(id, title, "00:00", emotion)
 
-    return {
-        "id" : id,
-        "title" : title,
-        "length" : "00:00"
-    }
+    return ai.get_song_info_by_id(id)
