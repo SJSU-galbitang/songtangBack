@@ -8,9 +8,7 @@ import google.generativeai as genai
 
 from data import song as data
 
-from error import IdNotFoundException
-
-from Project.songtangBack.error import InvalidEmotionResultException
+from error import IdNotFoundException, InvalidEmotionResultException
 
 # 환경 변수 로드
 load_dotenv()

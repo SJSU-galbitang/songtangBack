@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import FastAPI, Body, HTTPException
 
-from Project.songtangBack.error import InvalidEmotionResultException
+from error import InvalidEmotionResultException, InsufficientInputDataException
 from error import IdNotFoundException
 from service import song as service
 from fastapi.middleware.cors import CORSMiddleware
@@ -172,7 +172,10 @@ def analyze_emotion(emotion):
 
 @app.post("/song")
 def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[str] = Body(embed = True)):
-    return service.generate_song(melody_ids, lyrics_ids)
+    try:
+        return service.generate_song(melody_ids, lyrics_ids)
+    except InsufficientInputDataException as e:
+        raise HTTPException(status_code=422, detail=e.msg)
 
 if __name__ == '__main__':
     import uvicorn
