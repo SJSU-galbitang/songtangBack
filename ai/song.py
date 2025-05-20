@@ -119,10 +119,6 @@ def get_lyrics_prompt_by_id(lyrics_id: str):
         print("가사가 아직 완성되지 않았습니다:", e)
         return None
 
-
-
-
-
 # gemini - 감정 기반 가사 프롬프트 생성
 def generate_lyrics_prompt(emotion):
     prompt = (
@@ -210,7 +206,7 @@ def generate_song(lyrics_prompt, melody_prompt, title):
     return id
 
 # suno - 노래 만들기 api
-def generate_one_song(id):
+def generate_song_by_prompt(id):
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
 
     payload = {}
