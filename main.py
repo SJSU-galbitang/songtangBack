@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import FastAPI, Body, HTTPException
 
+from Project.songtangBack.error import InvalidEmotionResultException
 from error import IdNotFoundException
 from service import song as service
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,8 +49,10 @@ def get_lyrics_by_id(lyrics_id):
 @app.get("/survey")
 def analyze_emotion(emotion):
     # 에러
-    #
-    # return service.analyze_emotion(emotion)
+    # try:
+    #     return service.analyze_emotion(emotion)
+    # except InvalidEmotionResultException as e:
+    #     raise HTTPException(status_code=500, detail=e.msg)
     return {
         "melodies": [
             {

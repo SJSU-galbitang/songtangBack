@@ -10,6 +10,8 @@ from data import song as data
 
 from error import IdNotFoundException
 
+from Project.songtangBack.error import InvalidEmotionResultException
+
 # 환경 변수 로드
 load_dotenv()
 
@@ -22,18 +24,27 @@ TOKEN = os.getenv("TOKEN")
 
 # gemini - 감정 분석
 def analyze_emotion(emotion):
-    prompt = (
-        f"{emotion} 라는 문장에서 나타나는 감정이 "
-        "sadness, anger, calm, excitement, hope, love, anxiety, joy 중에서 "
-        "어디에 속하는지 2개의 키워드로 알려줘. 다른말 하지말고 두개의 키워드만 콤마로 구분해서 알려줘 영어로 알려줘 내가 말한 키워드 말고 다른 키워드는 쓰지마"
-    )
-    response = model.generate_content(prompt)
-    emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
-    ai_emotion = list(map(str.lower, response.text.replace("\n", "").split(", ")))
-    print("emotion", ai_emotion)
-    result = list(set(ai_emotion) & emotions)
-    print("result", result)
-    return result
+
+    for i in range(5):
+        prompt = (
+            f"{emotion} 라는 문장에서 나타나는 감정이 "
+            "sadness, anger, calm, excitement, hope, love, anxiety, joy 중에서 "
+            "어디에 속하는지 2개의 키워드로 알려줘. 다른말 하지말고 두개의 키워드만 콤마로 구분해서 알려줘 영어로 알려줘 내가 말한 키워드 말고 다른 키워드는 쓰지마"
+        )
+        response = model.generate_content(prompt)
+        emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
+        ai_emotion = list(map(str.lower, response.text.replace("\n", "").split(", ")))
+        print("emotion", ai_emotion)
+        result = list(set(ai_emotion) & emotions)
+        print("result", result)
+
+        if len(result) == 2:
+            return result
+
+        if i == 4:
+            raise InvalidEmotionResultException(msg="제미나이 감정 분석 결과가 잘못되었습니다.")
+
+    return None
 
 # gemini - 감정 기반 가사 프롬프트 생성
 def generate_lyrics_prompt(emotion):
