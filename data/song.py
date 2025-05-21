@@ -53,6 +53,6 @@ def insert_data(id, title, length, emotion):
                 print("✅ 쿼리 실행 성공")
             except Exception as inner_e:
                 trans.rollback()
-                print("❌ 트랜잭션 실패, 롤백:", inner_e)
+                raise RuntimeError(f"트랜잭션 실패: {inner_e}") from inner_e
     except Exception as e:
-        print("❌ 연결 또는 트랜잭션 시작 실패:", e)
+        raise ConnectionError(f"DB 연결 또는 트랜잭션 시작 실패: {e}") from e

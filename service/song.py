@@ -123,7 +123,8 @@ def generate_song(melody_ids, lyrics_ids):
 
     title = ai.generate_title(lyrics_prompt, melody_prompt)
 
-    id = ai.generate_song(lyrics_prompt, melody_prompt, title)
+    # id = ai.generate_song(lyrics_prompt, melody_prompt, title)
+    id = "9fadc597-c8ad-4b86-8cea-a832d2651a31"
 
     emotion = max([emotion for _, _, emotion in melody_info])
 
