@@ -3,9 +3,7 @@ from typing import List
 from data import db_connect
 from sqlalchemy import create_engine, text
 
-from error import IdNotFoundException
-
-from Project.songtangBack.error import SQLError
+from error import IdNotFoundException, SQLError
 
 engine = create_engine(db_connect.DATABASE_URL, echo=True)
 

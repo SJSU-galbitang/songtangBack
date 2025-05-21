@@ -49,7 +49,12 @@ def analyze_emotion(emotion):
         "sadness, anger, calm, excitement, hope, love, anxiety, joy 중에서 "
         "어디에 속하는지 2개의 키워드로 알려줘. 다른말 하지말고 두개의 키워드만 콤마로 구분해서 알려줘 영어로 알려줘 내가 말한 키워드 말고 다른 키워드는 쓰지마"
     )
-    return model.generate_content(prompt)
+
+    result = model.generate_content(prompt)
+
+    print(result)
+
+    return result
 
 # suno - 가사 생성 API 호출
 def generate_lyrics(prompt):
@@ -67,6 +72,8 @@ def generate_lyrics(prompt):
 
     response = requests.post(url, headers=headers, data=payload)
     response = json.loads(response.text)
+
+    print(response)
 
     return response
 
@@ -143,7 +150,7 @@ def generate_title(lyrics_prompts, melody_prompts):
 
     return title
 
-
+# suno - 노래 만들기
 def generate_song(lyrics_prompt, melody_prompt, title):
     # url = "https://apibox.erweima.ai/api/v1/generate"
     #
@@ -171,7 +178,7 @@ def generate_song(lyrics_prompt, melody_prompt, title):
     print(id)
     return id
 
-# suno - 노래 만들기 api
+# suno - 아아디로 노래 정보 조호ㅣ
 def get_song_info_by_id(id):
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
 
@@ -182,22 +189,19 @@ def get_song_info_by_id(id):
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)
-
-    print(response.text)
-
-    import random
-    value = random.randint(0, 1)
-
     response = json.loads(response.text)["data"]
-    id = response['response']["sunoData"][value]['id']
-    title = response['response']["sunoData"][value]["title"].replace("\n", "")
-    length = response['response']["sunoData"][value]["duration"]
-    length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
-    # prompt = json.loads(response["param"])["prompt"].replace("\n", "")
-    # style = json.loads(response["param"])["style"].replace("\n", "")
+    print(response)
 
-    return {
-        "id": id,
-        "title": title,
-        "length": length
+    return response
+
+def get_lyrics_id_by_task_id(task_id):
+    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={task_id}"
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
     }
+
+    response = requests.get(url, headers=headers)
+    response = json.loads(response.text)
+
+    return response
