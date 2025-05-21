@@ -1,4 +1,3 @@
-import json
 from typing import List
 
 from data import song as data
@@ -82,9 +81,6 @@ def process_lyrics(emotion):
             lyrics_response = lyrics_response.get("data", {})
             print(lyrics_response)
             print(type(lyrics_response))
-
-            if lyrics_response["response"] is None:
-                raise
 
             lyrics_ids.append(0)
 

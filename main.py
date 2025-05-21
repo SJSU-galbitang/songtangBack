@@ -2,8 +2,7 @@ from typing import List
 
 from fastapi import FastAPI, Body, HTTPException
 
-from error import SQLError, InvalidGeminiResponseException
-from error import InvalidEmotionResultException, InsufficientInputDataException, IdNotFoundException
+from error import SQLError, InvalidGeminiResponseException, InvalidEmotionResultException, InsufficientInputDataException, IdNotFoundException
 from service import song as service
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
@@ -12,8 +11,7 @@ app = FastAPI()
 origins = [
     "https://songtang.vercel.app/",
     "https://songtang.vercel.app",
-    "http://localhost:5173",
-    "http://10.129.59.129:5173"
+    "http://localhost:5173"
 
 ]
 

@@ -1,5 +1,3 @@
-from typing import List
-
 from data import db_connect
 from sqlalchemy import create_engine, text
 
