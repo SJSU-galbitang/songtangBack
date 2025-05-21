@@ -9,7 +9,6 @@ from error import InsufficientInputDataException, SQLError, InvalidGeminiRespons
 def get_song_by_id(song_id):
 
     id, title, length = data.get_melody_by_id(song_id)
-    length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
 
     return {
         "id" : id,
@@ -135,8 +134,8 @@ def generate_song(melody_ids, lyrics_ids):
 
     id = response['response']["sunoData"][value]['id']
     title = response['response']["sunoData"][value]["title"].replace("\n", "")
-    length = float(response['response']["sunoData"][value]["duration"])
-    length = f"{int(length // 60):02}:{int(length % 60):02}"
+    length = response['response']["sunoData"][value]["duration"]
+    length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
     # prompt = json.loads(response["param"])["prompt"].replace("\n", "")
     # style = json.loads(response["param"])["style"].replace("\n", "")
 
