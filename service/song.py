@@ -17,7 +17,15 @@ def get_song_by_id(song_id):
     }
 
 def get_lyrics_by_id(song_id):
-    return {"lyrics" : ai.get_lyrics(song_id)}
+    response = ai.get_lyrics(song_id)
+    import random
+    value = random.randint(0, 1)
+
+    print(response)
+
+    result = response["data"]["response"]["data"][value]["text"]
+    print(result)
+    return {"lyrics" : result}
 
 def process_emotion(emotion):
     for i in range(5):

@@ -29,17 +29,10 @@ def get_lyrics(lyrics_id):
 
     response = requests.get(url, headers=headers)
     print(type(response))
+    print(response.text)
     response = json.loads(response.text)
 
-    if type(response) == dict:
-        raise IdNotFoundException(msg="해당 아이디에 대한 가사 정보를 찾을 수 없습니다.")
-
-    value = random.randint(0, 1)
-
-    print(response.text)
-
-    result = response["data"]["response"]["data"][value]["text"]
-    return result
+    return response
 
 # gemini - 감정 분석
 def analyze_emotion(emotion):
