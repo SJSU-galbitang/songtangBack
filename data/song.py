@@ -40,18 +40,12 @@ def get_melody_info_by_id(melody_ids):
         return result
 
 def insert_data(id, title, length, emotion):
-    try:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(
-                    text(
-                        "INSERT INTO songs (id, title, length, emotion) VALUES (:id, :title, :length, :emotion)"),
-                    {"id": id, "title": title, "length": length, "emotion": emotion}
-            )
-            trans.commit()
-            print("✅ 쿼리 실행 성공")
-            except Exception as inner_e:
-                trans.rollback()
-                raise RuntimeError(f"트랜잭션 실패: {inner_e}") from inner_e
-    except Exception as e:
-        raise ConnectionError(f"DB 연결 또는 트랜잭션 시작 실패: {e}") from e
+    with engine.connect() as conn:
+        trans = conn.begin()
+        conn.execute(
+                text(
+                    "INSERT INTO songs (id, title, length, emotion) VALUES (:id, :title, :length, :emotion)"),
+                {"id": id, "title": title, "length": length, "emotion": emotion}
+        )
+        trans.commit()
+        print("✅ 쿼리 실행 성공")
