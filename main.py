@@ -175,10 +175,18 @@ def analyze_emotion(emotion):
 
 @app.post("/song")
 def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[str] = Body(embed = True)):
-    try:
-        return service.generate_song(melody_ids, lyrics_ids)
-    except InsufficientInputDataException as e:
-        raise HTTPException(status_code=422, detail=e.msg)
+    # try:
+    #     return service.generate_song(melody_ids, lyrics_ids)
+    # except InsufficientInputDataException as e:
+    #     raise HTTPException(status_code=422, detail=e.msg)
+    id = "9fadc597-c8ad-4b86-8cea-a832d2651a31"
+    title = "American Ignition"
+    length = "02:02"
+    return {
+        "id": id,
+        "title": title,
+        "length": length
+    }
 
 if __name__ == '__main__':
     import uvicorn
