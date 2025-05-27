@@ -124,6 +124,7 @@ def generate_song(melody_ids, lyrics_ids):
     for lyrics_id in lyrics_ids:
         lyrics_prompts.append(ai.get_lyrics_prompt_by_id(lyrics_id))
     lyrics_prompt = ai.generate_one_lyrics(lyrics_prompts)
+    lyrics_task_id = ai.generate_lyrics(lyrics_prompt)
 
     melody_info = data.get_melody_info_by_id(melody_ids)
     melody_params = [prompt + style for prompt, style, _ in melody_info]
