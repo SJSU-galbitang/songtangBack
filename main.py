@@ -3,7 +3,7 @@ from typing import List
 from fastapi import FastAPI, Body, HTTPException
 
 from error import SQLError, InvalidGeminiResponseException, InvalidEmotionResultException, InsufficientInputDataException, IdNotFoundException
-from service import song as service
+from service import song_search as service
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 

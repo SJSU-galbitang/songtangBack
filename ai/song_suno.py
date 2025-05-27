@@ -7,12 +7,29 @@ from data import song as data
 
 from error import IdNotFoundException, InvalidEmotionResultException
 
-# 환경 변수 로드
 load_dotenv()
-
-# 수노 API 토큰
 TOKEN = os.getenv("TOKEN")
 
+# suno - 가사 생성
+def generate_lyrics(prompt):
+    url = "https://apibox.erweima.ai/api/v1/lyrics"
+
+    payload = json.dumps({
+        "prompt": prompt + "영어로 해줘",
+        "callBackUrl": "https://api.example.com/callback"
+    })
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+
+    response = requests.post(url, headers=headers, data=payload)
+    response = json.loads(response.text)
+
+    print(response)
+
+    return response
 
 # suno - noTOKEN - 가사 결과 가져오기
 def get_lyrics(lyrics_id):
@@ -29,28 +46,18 @@ def get_lyrics(lyrics_id):
 
     return response
 
-
-# suno - 가사 생성 API 호출
-def generate_lyrics(prompt):
-    url = "https://apibox.erweima.ai/api/v1/lyrics"
-
-    payload = json.dumps({
-        "prompt": prompt,
-        "callBackUrl": "https://api.example.com/callback"
-    })
+# 태스크아이디로 가사 아이디 조회
+def get_lyrics_id_by_task_id(task_id):
+    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={task_id}"
     headers = {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer ' + TOKEN
     }
 
-    response = requests.post(url, headers=headers, data=payload)
+    response = requests.get(url, headers=headers)
     response = json.loads(response.text)
 
-    print(response)
-
     return response
-
 
 # suno - noTOKEN - 특정 가사 생성 요청에 사용된 프롬프트 가져오기
 def get_lyrics_prompt_by_id(lyrics_id: str):
@@ -71,7 +78,6 @@ def get_lyrics_prompt_by_id(lyrics_id: str):
     except Exception as e:
         print("가사가 아직 완성되지 않았습니다:", e)
         return None
-
 
 # suno - 노래 만들기
 def generate_song(lyrics, melody_prompt, title):
@@ -102,7 +108,6 @@ def generate_song(lyrics, melody_prompt, title):
     print(id)
     return id
 
-
 # suno - 아아디로 노래 정보 조호ㅣ
 def get_song_info_by_id(id):
     url = f"https://apibox.erweima.ai/api/v1/generate/record-info?taskId={id}"
@@ -116,18 +121,5 @@ def get_song_info_by_id(id):
     response = requests.request("GET", url, headers=headers, data=payload)
     response = json.loads(response.text)["data"]
     print(response)
-
-    return response
-
-
-def get_lyrics_id_by_task_id(task_id):
-    url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={task_id}"
-    headers = {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + TOKEN
-    }
-
-    response = requests.get(url, headers=headers)
-    response = json.loads(response.text)
 
     return response
