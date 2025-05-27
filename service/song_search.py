@@ -1,9 +1,5 @@
-from typing import List
-
 from data import song as data
-from ai import song as ai
-
-from error import InsufficientInputDataException, SQLError, InvalidGeminiResponseException, InvalidEmotionResultException
+from ai import song_suno as suno
 
 def get_song_by_id(song_id):
 
@@ -15,8 +11,13 @@ def get_song_by_id(song_id):
         "length" : length
     }
 
+def get_lyrics_id_by_task_id(task_id):
+    response = suno.get_lyrics_id_by_task_id(task_id)
+    print(response)
+    return response["data"]["response"]["data"][0]["id"]
+
 def get_lyrics_by_id(song_id):
-    response = ai.get_lyrics(song_id)
+    response = suno.get_lyrics(song_id)
     import random
     value = random.randint(0, 1)
 

@@ -1,14 +1,15 @@
 from typing import List
 
 from data import song as data
-from ai import song as ai
+from ai import song_suno as suno
+from ai import song_gemini as gemini
 
 from error import InsufficientInputDataException, SQLError, InvalidGeminiResponseException, InvalidEmotionResultException
 
 def process_emotion(emotion):
     for i in range(5):
         import re
-        response = ai.analyze_emotion(emotion)
+        response = gemini.analyze_emotion(emotion)
         emotions = {"sadness", "anger", "calm", "excitement", "hope", "love", "anxiety", "joy"}
         ai_emotion = [e.strip().lower() for e in re.split(r",\s*", response.text.strip())]
         result = list(set(ai_emotion) & emotions)
@@ -42,7 +43,7 @@ def get_song_by_emotion(emotion = List[str]):
     return selected_data
 
 def process_lyrics(emotion):
-    prompt = ai.generate_lyrics_prompt(emotion)
+    prompt = gemini.generate_lyrics_prompt(emotion)
 
     import re
     lines = re.split(r'[\n\r]', prompt)
@@ -54,14 +55,14 @@ def process_lyrics(emotion):
     lyrics_ids = []
 
     for prompt in prompts:
-        response = ai.generate_lyrics(prompt)
+        response = suno.generate_lyrics(prompt)
         response = response.get("data", {})
 
         print(response.keys())
 
         if "taskId" in response:
             task_id = response["taskId"]
-            lyrics_response = ai.get_lyrics_id_by_task_id(task_id)
+            lyrics_response = suno.get_lyrics_id_by_task_id(task_id)
             print(lyrics_response)
             lyrics_response = lyrics_response.get("data", {})
             print(lyrics_response)
@@ -81,7 +82,6 @@ def analyze_emotion(emotion):
 
     if len(melodies) != 20:
         raise SQLError(msg=f"멜로디 개수가 20개가 아님 {len(melodies)} 개 입니다")
-
     if len(lyrics) != 10:
         raise InvalidGeminiResponseException(msg=f"가사 개수가 10개가 아님 {len(lyrics)} 개 입니다")
 

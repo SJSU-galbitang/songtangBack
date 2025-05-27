@@ -3,7 +3,9 @@ from typing import List
 from fastapi import FastAPI, Body, HTTPException
 
 from error import SQLError, InvalidGeminiResponseException, InvalidEmotionResultException, InsufficientInputDataException, IdNotFoundException
-from service import song_search as service
+from service import song_search as search
+from service import song_generation as generate
+from service import song_analysis as analyze
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
@@ -27,7 +29,7 @@ app.add_middleware(
 @app.get("/song/{song_id}")
 def get_song_by_id(song_id: str) -> dict:
     try:
-        result = service.get_song_by_id(song_id)
+        result = search.get_song_by_id(song_id)
         return result
     except IdNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.msg)
@@ -35,7 +37,7 @@ def get_song_by_id(song_id: str) -> dict:
 @app.get("/lyrics/{lyrics_id}")
 def get_lyrics_by_id(lyrics_id):
     try:
-        result = service.get_lyrics_by_id(lyrics_id)
+        result = search.get_lyrics_by_id(lyrics_id)
         return result
     except IdNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.msg)
@@ -43,7 +45,7 @@ def get_lyrics_by_id(lyrics_id):
 @app.get("/survey")
 def analyze_emotion(emotion):
     try:
-        return service.analyze_emotion(emotion)
+        return analyze.analyze_emotion(emotion)
     except InvalidEmotionResultException as e:
         raise HTTPException(status_code=500, detail=e.msg)
     except SQLError as e:
@@ -54,7 +56,7 @@ def analyze_emotion(emotion):
 @app.post("/song")
 def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[str] = Body(embed = True)):
     try:
-        return service.generate_song(melody_ids, lyrics_ids)
+        return generate.generate_song(melody_ids, lyrics_ids)
     except InsufficientInputDataException as e:
         raise HTTPException(status_code=422, detail=e.msg)
 
