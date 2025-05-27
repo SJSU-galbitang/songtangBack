@@ -144,28 +144,31 @@ def generate_title(lyrics_prompts, melody_prompts):
 
 # suno - 노래 만들기
 def generate_song(lyrics_prompt, melody_prompt, title):
-    # url = "https://apibox.erweima.ai/api/v1/generate"
-    #
-    # payload = json.dumps({
-    #     "prompt": lyrics_prompt,
-    #     "style": melody_prompt,
-    #     "title": title,
-    #     "customMode": True,
-    #     "instrumental": False,
-    #     "model": "V4_5",
-    #     "callBackUrl": "https://your-api.com/music-callback"
-    # })
-    #
-    # headers = {
-    #     'Content-Type': 'application/json',
-    #     'Accept': 'application/json',
-    #     'Authorization': 'Bearer ' + TOKEN
-    # }
-    # response = requests.request("POST", url, headers=headers, data=payload).text
-    #
-    # print(response)
+    print(lyrics_prompt)
+    url = "https://apibox.erweima.ai/api/v1/generate"
 
-    id = "6279102da0df35f950a30364904449e7"
+    prompt = "[Verse]\n낯선 길 위에 서 있네\n지도 없는 하루가 펼쳐지네\n외로움 속에 나를 찾는 밤\n별빛 아래 숨 쉬는 꿈을 담네\n\n[Verse 2]\n주머니는 가볍고 마음은 무거워\n거리의 노래가 나를 위로해\n모퉁이를 돌면 또 다른 세상\n그 속에 내가 있을까 기대해\n\n[Chorus]\n여긴 내가 몰랐던 세상\n낯선 얼굴도 날 반겨주네\n길 위에서 배우는 내 삶\n다양함 속에 내 자신을 느껴\n\n[Verse 3]\n햇살은 다르지만 따스해\n바람이 속삭이는 새로운 얘기\n미국의 거리 속 숨겨진 향기\n그 다양함이 나를 감싸주네\n\n[Bridge]\n그리운 집의 향기가 떠오르네\n익숙함이 그리워지는 순간\n하지만 이곳에서 찾은 연결\n나를 더 크게 만들어주네\n\n[Chorus]\n여긴 내가 몰랐던 세상\n낯선 얼굴도 날 반겨주네\n길 위에서 배우는 내 삶\n다양함 속에 내 자신을 느껴'"
+
+    payload = json.dumps({
+        "prompt": prompt,
+        "style": melody_prompt,
+        "title": title,
+        "customMode": True,
+        "instrumental": False,
+        "model": "V4_5",
+        "callBackUrl": "https://your-api.com/music-callback"
+    })
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+    }
+    response = requests.request("POST", url, headers=headers, data=payload).text
+
+    print(response)
+
+    # id = "6279102da0df35f950a30364904449e7"
     # id = json.loads(response)["data"]["taskId"]
     print(id)
     return id

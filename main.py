@@ -179,9 +179,9 @@ def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[s
     #     return service.generate_song(melody_ids, lyrics_ids)
     # except InsufficientInputDataException as e:
     #     raise HTTPException(status_code=422, detail=e.msg)
-    id = "9fadc597-c8ad-4b86-8cea-a832d2651a31"
-    title = "American Ignition"
-    length = "02:02"
+    id = "671d4c1f-c378-402f-9657-1896bea2e2a7"
+    title = "American Spectrum"
+    length = "03:26"
     return {
         "id": id,
         "title": title,
