@@ -2,8 +2,7 @@ from data import song as data
 from ai import song_suno as suno
 
 def get_song_by_id(song_id):
-
-    id, title, length = data.get_melody_by_id(song_id)
+    id, title, length = data.get_song_by_id(song_id)
 
     return {
         "id" : id,

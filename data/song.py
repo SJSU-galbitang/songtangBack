@@ -27,6 +27,14 @@ def get_all_song():
 
         return result
 
+def get_song_by_id(song_id):
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT id, title, length FROM songs WHERE id = :id"),
+        {"id": song_id}
+        ).fetchone()
+        return result
+
 def get_melody_info_by_id(melody_ids):
     with engine.connect() as conn:
         result = conn.execute(
