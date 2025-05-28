@@ -183,12 +183,17 @@ def get_full_analysis(emotion: str):
 
 @app.post("/song")
 def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[str] = Body(embed = True)):
-    try:
-        return generate.generate_song(melody_ids, lyrics_ids)
-    except InsufficientInputDataException as e:
-        raise HTTPException(status_code=422, detail=e.msg)
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=str(e))
+    # try:
+    #     return generate.generate_song(melody_ids, lyrics_ids)
+    # except InsufficientInputDataException as e:
+    #     raise HTTPException(status_code=422, detail=e.msg)
+    # # except Exception as e:
+    # #     raise HTTPException(status_code=500, detail=str(e))
+    return {
+        "id": "7037aaf7-dc2c-409f-8672-514dd71e8386",
+        "title": "The Journey Within",
+        "length": "03:26"
+    }
 
 @app.get("/song/length/{song_id}")
 def get_song_duration(song_id):
