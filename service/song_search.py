@@ -14,10 +14,15 @@ def get_song_by_id(song_id):
 def get_lyrics_id_by_task_id(task_id):
     response = suno.get_lyrics_id_by_task_id(task_id)
     print(response)
-    return response["data"]["response"]["data"][0]["id"]
 
-def get_lyrics_by_id(song_id):
-    response = suno.get_lyrics(song_id)
+    import random
+    value = random.randint(0, 1)
+
+    return response["data"]["response"]["data"][value]["id"]
+
+def get_lyrics_by_id(task_id):
+    lyrics_id = get_lyrics_id_by_task_id(task_id)
+    response = suno.get_lyrics(lyrics_id)
     import random
     value = random.randint(0, 1)
 

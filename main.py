@@ -37,8 +37,7 @@ def get_song_by_id(song_id: str) -> dict:
 @app.get("/lyrics/{lyrics_id}")
 def get_lyrics_by_id(lyrics_id):
     try:
-        result = search.get_lyrics_by_id(lyrics_id)
-        return result
+        return search.get_lyrics_by_id(lyrics_id)
     except IdNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.msg)
 
