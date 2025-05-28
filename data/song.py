@@ -58,3 +58,14 @@ def insert_data(id, title, length, emotion):
         )
         trans.commit()
         print("✅ 쿼리 실행 성공")
+
+def update_length(id, length):
+    with engine.connect() as conn:
+        trans = conn.begin()
+        conn.execute(
+            text(
+                "UPDATE SONGS SET length = :length WHERE id = :id"),
+            {"id": id, "length": length}
+        )
+        trans.commit()
+        print("✅ 쿼리 실행 성공")

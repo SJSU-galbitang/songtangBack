@@ -74,6 +74,10 @@ def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[s
     # except Exception as e:
     #     raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/song/length/{song_id}")
+def get_song_duration(song_id):
+    return search.get_song_duration(song_id)
+
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run("main:app", reload=True)
