@@ -1,4 +1,5 @@
 from typing import List
+import asyncio
 
 from data import song as data_song
 from ai import song_suno as suno
@@ -39,7 +40,18 @@ def get_song_by_emotion(emotion = List[str]):
 
     return [selected_data[i] for i in range(value, len(selected_data), 2)]
 
-def process_lyrics(emotion):
+def get_melodies_by_analysis_emotion(emotion):
+    ai_emotion = process_emotion(emotion)
+    melodies = get_song_by_emotion(ai_emotion)
+
+    if len(melodies) != 20:
+        raise SQLError(msg=f"멜로디 개수가 20개가 아님 {len(melodies)} 개 입니다")
+
+    return {
+        "melodies": melodies
+    }
+
+async def process_lyrics_async(emotion):
     gemini_prompt = gemini.generate_lyrics_prompt(emotion)
 
     import re
@@ -47,35 +59,23 @@ def process_lyrics(emotion):
     prompts = [line.split('.', 1)[-1].strip() for line in lines if '.' in line]
 
     if len(prompts) != 10:
-        raise InvalidGeminiResponseException("제미나이로 부터 정상적인 응답을 받지 못했습니다. : 제공된 노래 가사 프롬프트의 개수가 10개가 아님")
+        raise InvalidGeminiResponseException("제미나이 응답 오류: 가사 프롬프트가 10개가 아님")
+
+    def generate(prompt):
+        return suno.generate_lyrics(prompt)  # 동기 함수라고 가정
+
+    tasks = [asyncio.to_thread(generate, p) for p in prompts]
+    results = await asyncio.gather(*tasks)
 
     lyrics_task_ids = []
 
-    for prompt in prompts:
-        response = suno.generate_lyrics(prompt)
-        response = response.get("data", {})
-
-        print(response.keys())
-
-        if "taskId" in response:
-            task_id = response["taskId"]
-            lyrics_task_ids.append(task_id)
+    for res in results:
+        data = res.get("data", {})
+        if "taskId" in data:
+            lyrics_task_ids.append(data["taskId"])
         else:
-            raise InvalidGeminiResponseException("제미나이로 부터 정상적인 응답을 받지 못했습니다.")
-
-    return lyrics_task_ids
-
-def analyze_emotion(emotion):
-    ai_emotion = process_emotion(emotion)
-    melodies = get_song_by_emotion(ai_emotion)
-    lyrics = process_lyrics(emotion)
-
-    if len(melodies) != 20:
-        raise SQLError(msg=f"멜로디 개수가 20개가 아님 {len(melodies)} 개 입니다")
-    if len(lyrics) != 10:
-        raise InvalidGeminiResponseException(msg=f"가사 개수가 10개가 아님 {len(lyrics)} 개 입니다")
+            raise InvalidGeminiResponseException("Suno 응답 오류: taskId 없음")
 
     return {
-        "melodies" : melodies,
-        "lyrics" : lyrics
+        "lyrics": lyrics_task_ids
     }
