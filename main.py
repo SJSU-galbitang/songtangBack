@@ -41,7 +41,7 @@ def get_lyrics_by_id(lyrics_id):
     except IdNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.msg)
 
-@app.get("/survey/full")
+@app.get("/survey")
 async def get_full_analysis(emotion: str):
     try:
         ai_emotion = analyze.process_emotion(emotion)
