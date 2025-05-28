@@ -194,7 +194,7 @@ def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[s
     return {
                 "id": "7037aaf7-dc2c-409f-8672-514dd71e8386",
                 "title": "The Journey Within",
-                "length": "00:00"
+                "length": "03:26"
             }
 
 @app.get("/song/length/{song_id}")
