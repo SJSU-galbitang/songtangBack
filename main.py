@@ -40,125 +40,11 @@ def get_lyrics_by_id(lyrics_id):
         return search.get_lyrics_by_task_id(lyrics_id)
     except IdNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.msg)
+    except Exception:
+        raise HTTPException(status_code=500, detail="노래 완성 안됨")
 
 @app.get("/survey")
 def get_full_analysis(emotion: str):
-    return {
-    "melodies": [
-        {
-            "id": "01e3e959-2994-4b1d-acf7-e883a88ab884",
-            "title": "Hopeful Steps",
-            "length": "02:57"
-        },
-        {
-            "id": "08a5733b-0a02-4ad6-a2be-b592c4c203c9",
-            "title": "Rising Light",
-            "length": "04:20"
-        },
-        {
-            "id": "15c4b64c-49cc-421c-b0bf-ac6be06a5e5e",
-            "title": "Beyond the Clouds",
-            "length": "03:30"
-        },
-        {
-            "id": "1cc18eeb-3fe6-42b0-a115-0c08e9a042eb",
-            "title": "Jumpstart",
-            "length": "02:52"
-        },
-        {
-            "id": "20e6d083-fcd0-483e-a328-2216fb1b2de3",
-            "title": "Ignite",
-            "length": "03:34"
-        },
-        {
-            "id": "28586910-cdd5-482a-b966-db67fdb25959",
-            "title": "Heart Racer",
-            "length": "04:09"
-        },
-        {
-            "id": "420b01e9-bef7-427c-95b1-3922ff7ac65f",
-            "title": "New Dawn",
-            "length": "03:04"
-        },
-        {
-            "id": "49e24b99-c994-492a-8ad3-cd9b35abf209",
-            "title": "Spark Ignition",
-            "length": "02:58"
-        },
-        {
-            "id": "614afd79-c6f3-4c89-980f-08902cd4f511",
-            "title": "Path Forward",
-            "length": "03:46"
-        },
-        {
-            "id": "664f1e06-f897-4b0a-b2c6-1c5635373fda",
-            "title": "Charge Up",
-            "length": "02:25"
-        },
-        {
-            "id": "6a086b74-fde6-4232-b5ef-77bb77243a63",
-            "title": "Bright Sparks",
-            "length": "03:30"
-        },
-        {
-            "id": "774b73da-7736-4d6c-be3a-73368ab69039",
-            "title": "High Voltage",
-            "length": "03:49"
-        },
-        {
-            "id": "8b0ca8cb-c51a-465a-8f9c-12ec82301a78",
-            "title": "Brighter Tomorrow",
-            "length": "04:07"
-        },
-        {
-            "id": "8e3d48b6-0079-4dfc-b146-7bb5b82e3e5b",
-            "title": "Brighter Tomorrow",
-            "length": "01:36"
-        },
-        {
-            "id": "a281306f-957d-47d1-96f0-1d56ecf30297",
-            "title": "New Horizons",
-            "length": "03:36"
-        },
-        {
-            "id": "b84bb799-3de5-492f-a121-d386c1972606",
-            "title": "Sunrise Promise",
-            "length": "03:19"
-        },
-        {
-            "id": "bb74b984-96e0-4462-8777-d087631aca7a",
-            "title": "Path Forward",
-            "length": "03:31"
-        },
-        {
-            "id": "c6ffb6c9-94af-4cd9-8700-14cb792adfe6",
-            "title": "Rush Hour",
-            "length": "03:24"
-        },
-        {
-            "id": "e036e60f-82a6-48ab-b266-9406f7f316f4",
-            "title": "Sunrise Promise",
-            "length": "03:31"
-        },
-        {
-            "id": "ed271919-e579-43a3-8a98-abfeb77c81f2",
-            "title": "Charge Up",
-            "length": "02:09"
-        }
-    ],
-    "lyrics": [
-        "83193f75c503b4c8a3b618d3d29ce56e",
-        "89f4b46a6d68719c73146eee7108bbd4",
-        "c22e3239fbd51ea36b882e0c231f66d9",
-        "42cf55969b53560f95e5842107d5c805",
-        "604536feb0ca2853515b1857f02d27fa",
-        "b57a537e63b50a14277c4da8e037cdba",
-        "99e88813771bf8b8ac851292db22e0dc",
-        "6939257aaf4150bf1aa159cbc5947f9a",
-        "3022a1cebb876798c55664e50221a471",
-        "2d331356bd3e50f227c0ca714df8a3b1"
-    ]
-}
     # try:
     #     ai_emotion = analyze.process_emotion(emotion)
     #
@@ -180,6 +66,122 @@ def get_full_analysis(emotion: str):
     #
     # except (InvalidEmotionResultException, SQLError, InvalidGeminiResponseException) as e:
     #     raise HTTPException(status_code=500, detail=str(e))
+    return {
+    "melodies": [
+                    {
+                        "id": "080ae684-b4a6-4fdc-a565-8cc6a14b6a39",
+                        "title": "Rising Light",
+                        "length": "04:43"
+                    },
+                    {
+                        "id": "12ab525c-54ae-4699-84f8-f502e1b45a5e",
+                        "title": "Ignite",
+                        "length": "02:34"
+                    },
+                    {
+                        "id": "1bb79dc1-7bc4-4386-9b20-2a724d712f22",
+                        "title": "Light Within",
+                        "length": "03:41"
+                    },
+                    {
+                        "id": "1e24cae7-7f68-460e-8361-c99d2e0b3309",
+                        "title": "Electric Night",
+                        "length": "03:44"
+                    },
+                    {
+                        "id": "24fa031b-37fb-4402-84bc-85c721f01d2f",
+                        "title": "Light Within",
+                        "length": "03:29"
+                    },
+                    {
+                        "id": "3666ce57-a1b1-410f-9746-7d7f1cf4df3c",
+                        "title": "Electric Pulse",
+                        "length": "03:47"
+                    },
+                    {
+                        "id": "49784f7f-1023-421d-9f01-0df9e653e92b",
+                        "title": "Open Skies",
+                        "length": "03:01"
+                    },
+                    {
+                        "id": "5a5189e4-0535-4d5c-bf30-6fc64e034f73",
+                        "title": "Electric Night",
+                        "length": "03:39"
+                    },
+                    {
+                        "id": "6277f97c-be64-43ec-a589-c4b9c49c75b5",
+                        "title": "New Dawn",
+                        "length": "02:57"
+                    },
+                    {
+                        "id": "68c24fe2-0f24-4cc9-95c6-f7e061066ac9",
+                        "title": "Rush Hour",
+                        "length": "03:21"
+                    },
+                    {
+                        "id": "7193d20f-7e8e-4c14-8874-cb279b392ec8",
+                        "title": "Beyond the Clouds",
+                        "length": "02:26"
+                    },
+                    {
+                        "id": "80e6acb2-3fbf-4533-971e-a94d81b8f18a",
+                        "title": "Heart Racer",
+                        "length": "02:16"
+                    },
+                    {
+                        "id": "8d4bea42-e044-47a0-bf9c-f99f33df8d75",
+                        "title": "New Horizons",
+                        "length": "03:16"
+                    },
+                    {
+                        "id": "8eb70514-8d91-4ece-82ec-51bc75cf2e1f",
+                        "title": "Bright Sparks",
+                        "length": "03:23"
+                    },
+                    {
+                        "id": "a5a8fd12-d867-4336-9ece-52196c55f49c",
+                        "title": "Jumpstart",
+                        "length": "02:23"
+                    },
+                    {
+                        "id": "bae9aca5-264c-4afc-9e09-09c77123ecd6",
+                        "title": "Electric Pulse",
+                        "length": "02:49"
+                    },
+                    {
+                        "id": "be2444f1-4920-400a-993b-994f4a648119",
+                        "title": "High Voltage",
+                        "length": "04:18"
+                    },
+                    {
+                        "id": "c921515f-adf4-42d1-a8ee-105f482c9f48",
+                        "title": "Open Skies",
+                        "length": "03:19"
+                    },
+                    {
+                        "id": "ed1df020-e8cd-4d0d-829d-c0c5d0ff24ac",
+                        "title": "Hopeful Steps",
+                        "length": "02:34"
+                    },
+                    {
+                        "id": "fd803a85-4c2f-4eac-9212-c891e9811449",
+                        "title": "Spark Ignition",
+                        "length": "02:54"
+                    }
+                ],
+                "lyrics": [
+                    "40f20b5d791db5e4bd85eda52b9dd32f",
+                    "dd8f2143bffeaa7a1fd3cc11523cf8fb",
+                    "e4b6a517a7ac8196fbad3cc7d2df0759",
+                    "0ef2eb455e7a5d7953dcf772059a578c",
+                    "8cadafa9db8ba0c5532e0fdc54450d75",
+                    "d29b5d98d60cd96c2eb48ab165d9d45c",
+                    "363f784ca823dc38de48c8b5f71e5d8e",
+                    "79af9590c1e5e966dedaa6a1a859cb84",
+                    "e771ff54182d3e42c25c9dab1dff9ab5",
+                    "cc88d906f4686555e34dde959e51a70d"
+                ]
+            }
 
 @app.post("/song")
 def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[str] = Body(embed = True)):
@@ -190,10 +192,10 @@ def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[s
     # # except Exception as e:
     # #     raise HTTPException(status_code=500, detail=str(e))
     return {
-        "id": "7037aaf7-dc2c-409f-8672-514dd71e8386",
-        "title": "The Journey Within",
-        "length": "03:26"
-    }
+                "id": "7037aaf7-dc2c-409f-8672-514dd71e8386",
+                "title": "The Journey Within",
+                "length": "00:00"
+            }
 
 @app.get("/song/length/{song_id}")
 def get_song_duration(song_id):
