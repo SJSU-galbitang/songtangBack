@@ -18,5 +18,9 @@ def get_lyrics_by_task_id(task_id):
     print(response)
 
     result = response["data"]["response"]["data"][value]["text"]
+    title = response["data"]["response"]["data"][value]["title"]
     print(result)
-    return {"lyrics" : result}
+    return {
+        "lyrics" : result,
+        "title" : title
+    }

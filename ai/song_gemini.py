@@ -43,26 +43,27 @@ def generate_lyrics_prompt(emotion):
     return result
 
 # gemini - 여러개의 가사 프롬프트를 하나로
-def generate_one_lyrics(lyrics_prompts):
+def generate_one_lyrics_prompt(lyrics_prompts):
     prompt = (
-        f"{lyrics_prompts} 라는 5개의 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
+        f"{lyrics_prompts} 라는 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
         "예시 프롬프트의 모든 내용을 다 반영해줘. "
         "너가 만든 프롬프트를 이용해서 수노를 이용해 노래 가사를 작성할거야. "
-        "1000자 이내로 작성해줘. 5개의 샘플 프롬프트를 한 문장으로 압축시켜줘 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
+        "공백 포함 200 byte 이내로 작성해줘. 5개의 샘플 프롬프트를 한 문장으로 압축시켜줘 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
     )
     lyrics = model.generate_content(prompt).text
     print("lyrics", lyrics)
 
     return lyrics
 
-# gemini - 가사, 멜로디 프롬프트로 제목 만들기
-def generate_title(lyrics_prompts, melody_prompts):
+# gemini - 여러개의 멜로디 프롬프트를 하나로
+def generate_one_melody_prompt(melody_prompts):
     prompt = (
-        f"가사 프롬프트: {lyrics_prompts} "
-        f"멜로디 프롬프트: {melody_prompts} "
-        "저 가사와 멜로디 프롬프트로 노래 제목을 하나 만들어줘 "
-        "최소 1단어, 최대 5단어 이내로 제목을 작성해줘. 제목만 한 문장으로 출력하고 다른 말은 절대 하지마"
+        f"{melody_prompts} 라는 예시 프롬프트들을 하나의 프롬프트로 만들어줘. "
+        "예시 프롬프트의 모든 내용을 다 반영해줘. "
+        "너가 만든 프롬프트를 이용해서 수노를 이용해 노래 멜로디를 작곡할거야. "
+        "공백 포함 200 byte 이내로 작성해줘. 10개의 샘플 프롬프트를 한 문장으로 압축시켜줘 프롬프트 한 문장만 출력하고 다른 말은 절대 하지마"
     )
-    title = model.generate_content(prompt).text
+    melodies = model.generate_content(prompt).text
+    print("lyrics", melodies)
 
-    return title
+    return melodies

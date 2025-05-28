@@ -71,6 +71,8 @@ def generate_song(melody_ids: List[str] = Body(embed = True), lyrics_ids: List[s
         return generate.generate_song(melody_ids, lyrics_ids)
     except InsufficientInputDataException as e:
         raise HTTPException(status_code=422, detail=e.msg)
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == '__main__':
     import uvicorn

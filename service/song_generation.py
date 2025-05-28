@@ -1,6 +1,9 @@
+import time
+
 from data import song as data
 from ai import song_suno as suno
 from ai import song_gemini as gemini
+from service import song_search as search
 
 from error import InsufficientInputDataException, SQLError, InvalidGeminiResponseException, InvalidEmotionResultException
 
@@ -14,38 +17,56 @@ def generate_song(melody_ids, lyrics_ids):
     lyrics_prompts = []
     for lyrics_id in lyrics_ids:
         lyrics_prompts.append(suno.get_lyrics_prompt_by_id(lyrics_id))
-    lyrics_prompt = gemini.generate_one_lyrics(lyrics_prompts)
-    lyrics_task_id = suno.generate_lyrics(lyrics_prompt)
+    lyrics_prompt = gemini.generate_one_lyrics_prompt(lyrics_prompts)
+    lyrics_task_id = suno.generate_lyrics(lyrics_prompt)["data"]["taskId"]
 
     melody_info = data.get_melody_info_by_id(melody_ids)
     melody_params = [prompt + style for prompt, style, _ in melody_info]
-    melody_prompt = gemini.generate_one_melody(melody_params)
+    melody_prompt = gemini.generate_one_melody_prompt(melody_params)
 
-    title = gemini.generate_title(lyrics_prompt, melody_prompt)
+    time.sleep(2)
+    response = suno.get_lyrics(lyrics_task_id)["data"]
 
-    id = suno.generate_song(lyrics_prompt, melody_prompt, title)
-    # id = "9fadc597-c8ad-4b86-8cea-a832d2651a31"
+    for i in range(10):
+        print("\n\nlyrics\n")
+        print(response)
+        if response["response"] is not None and response["response"]["data"] is not None and response["response"]["data"][0]["text"] is not None and response["response"]["data"][0]["title"] is not None:
+            break
+        else:
+            print("response is None", i)
+            time.sleep(2)
 
-    emotion = max([emotion for _, _, emotion in melody_info])
-
-    response = suno.get_song_info_by_id(id)
+        response = suno.get_lyrics(lyrics_task_id)["data"]
 
     import random
     value = random.randint(0, 1)
+    lyrics = response["response"]["data"][value]["text"]
+    title = response["response"]["data"][value]["title"]
 
-    id = response['response']["sunoData"][value]['id']
-    title = response['response']["sunoData"][value]["title"].replace("\n", "")
-    length = response['response']["sunoData"][value]["duration"]
-    length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
-    # prompt = json.loads(response["param"])["prompt"].replace("\n", "")
-    # style = json.loads(response["param"])["style"].replace("\n", "")
+    id = suno.generate_song(lyrics, melody_prompt, title)
 
-    print(id, title, length, emotion)
+    time.sleep(10)
+    response = suno.get_song_info_by_id(id)
+    for i in range(6):
 
-    data.insert_data(id, title, length, emotion)
+        if response["response"] is not None and response["response"]["sunoData"] is not None and response["response"]["sunoData"][0]["id"] is not None:
+            break
+        else:
+            print("response is None", i)
+            time.sleep(10)
+        response = suno.get_song_info_by_id(id)
+
+    emotion = max([emotion for _, _, emotion in melody_info])
+    id = response['response']["sunoData"][0]['id']
+    # length = response['response']["sunoData"][value]["duration"]
+    # length = f"{int(float(length) // 60):02}:{int(float(length) % 60):02}"
+    print("\n\nsonginto\n")
+    print(id, title, "00:00", emotion)
+
+    data.insert_data(id, title, "00:00", emotion)
 
     return {
         "id" : id,
         "title" : title,
-        "length" : length
+        "length" : "00:00"
     }

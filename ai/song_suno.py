@@ -47,7 +47,7 @@ def get_lyrics(lyrics_id):
     return response
 
 # 태스크아이디로 가사 아이디 조회
-def get_lyrics_id_by_task_id(task_id):
+def get_lyrics_by_task_id(task_id):
     url = f"https://apibox.erweima.ai/api/v1/lyrics/record-info?taskId={task_id}"
     headers = {
         'Accept': 'application/json',
@@ -105,8 +105,8 @@ def generate_song(lyrics, melody_prompt, title):
 
     print(response)
 
-    # id = "6279102da0df35f950a30364904449e7"
-    # id = json.loads(response)["data"]["taskId"]
+    id = json.loads(response)["data"]["taskId"]
+
     print(id)
     return id
 
