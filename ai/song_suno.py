@@ -57,6 +57,8 @@ def get_lyrics_id_by_task_id(task_id):
     response = requests.get(url, headers=headers)
     response = json.loads(response.text)
 
+    print(response)
+
     return response
 
 # suno - noTOKEN - 특정 가사 생성 요청에 사용된 프롬프트 가져오기

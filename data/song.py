@@ -33,6 +33,7 @@ def get_song_by_id(song_id):
             text("SELECT id, title, length FROM songs WHERE id = :id"),
         {"id": song_id}
         ).fetchone()
+
         return result
 
 def get_melody_info_by_id(melody_ids):

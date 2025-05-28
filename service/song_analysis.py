@@ -1,6 +1,6 @@
 from typing import List
 
-from data import song as data
+from data import song as data_song
 from ai import song_suno as suno
 from ai import song_gemini as gemini
 
@@ -23,7 +23,7 @@ def process_emotion(emotion):
     return None
 
 def get_song_by_emotion(emotion = List[str]):
-    _data = data.get_all_song()
+    _data = data_song.get_all_song()
     selected_data = []
 
     for data in _data:
